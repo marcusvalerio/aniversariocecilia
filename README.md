@@ -12,7 +12,7 @@ Abra `index.html` em um navegador moderno. A página é estática e não precisa
 
 ## Incluído nesta versão
 
-- Layout responsivo com paleta rosa Ballet (`#F6D6DA`), amarelo suave e creme.
+- Layout responsivo em tons pastel: rosa bebê, amarelo bebê e off-white.
 - Animações CSS de margaridas/abelhinhas decorativas e transições ao rolar a página; respeita `prefers-reduced-motion`.
 - Frase principal: “Há 1 ano o jardim dos meus pais está em flor”.
 - Detalhes demonstrativos do evento, contagem regressiva, atalho do Google Maps e download de evento `.ics` para calendário.

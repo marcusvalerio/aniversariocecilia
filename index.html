@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#fbeee9">
+<meta name="theme-color" content="#fffcf6">
 <title>Cecília · 1 Aninho</title>
 <meta name="description" content="Nosso jardim está em festa! Venha celebrar o primeiro aninho da Cecília.">
 <meta property="og:title" content="Cecília · 1 Aninho">
@@ -14,8 +14,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&family=Parisienne&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#fdf3ee; --paper2:#fbe9e4; --ink:#6d5048; --ink-soft:#9a7d74; --sage:#7f8f6a;
-    --gold:#c9a24f; --gold-l:#ecd9a4; --gold-d:#a37b2c; --rose:#e3a5ae; --rose-d:#cf8996; --leaf:#7c9a62;
+    --paper:#fffcf6; --paper2:#fdf1ee; --ink:#7a5c58; --ink-soft:#a88c86; --sage:#c48a96;
+    --gold:#d9b765; --gold-l:#f6e7b4; --gold-d:#b8923f; --rose:#f2bcc6; --rose-d:#dc9aa8; --leaf:#a9c29a;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -25,11 +25,11 @@
   /* ---------- fundo aquarelado ---------- */
   .bg{position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(40% 30% at 5% 2%,rgba(240,190,196,.55),transparent 70%),
-      radial-gradient(35% 25% at 100% 45%,rgba(245,200,205,.45),transparent 70%),
+      radial-gradient(40% 30% at 5% 2%,rgba(248,208,215,.55),transparent 70%),
+      radial-gradient(35% 25% at 100% 45%,rgba(253,236,170,.4),transparent 70%),
       radial-gradient(45% 30% at 0% 70%,rgba(246,214,218,.5),transparent 70%),
       radial-gradient(60% 40% at 50% 0%,#fff8f2,transparent 70%),
-      linear-gradient(180deg,#fdf4ef,#fbece6 60%,#f9e4e0)}
+      linear-gradient(180deg,#fffcf6,#fdf3ef 55%,#fbe8ea)}
   .bg::after{content:"";position:absolute;inset:0;opacity:.45;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .45 0 0 0 0 .4 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
@@ -80,7 +80,7 @@
   @keyframes foil{0%,100%{background-position:100% 0}50%{background-position:0 0}}
   .name .heart{display:inline-block;-webkit-text-fill-color:initial;font-size:.38em;vertical-align:.9em;margin-left:-.12em;color:var(--gold);animation:beat 1.6s ease-in-out infinite}
   @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
-  .age{font-family:'Cinzel',serif;letter-spacing:.5em;font-size:1.05rem;color:var(--ink-soft);margin:4px 0 14px;padding-left:.5em}
+  .age{font-family:'Cinzel',serif;letter-spacing:.5em;font-size:1.05rem;color:var(--gold-d);margin:4px 0 14px;padding-left:.5em}
   .lead{font-family:'Parisienne',cursive;font-size:clamp(1.6rem,7vw,2.1rem);line-height:1.3;color:var(--sage)}
   .tiny-heart{display:block;margin:10px auto 0;width:16px;color:var(--gold);animation:beat 2s ease-in-out infinite}
 
@@ -96,7 +96,7 @@
     .info>div+div{border-left:0;border-top:1px solid var(--gold-l);padding-top:12px}
   }
 
-  .card{position:relative;background:rgba(253,236,232,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(201,162,79,.35);
+  .card{position:relative;background:rgba(253,238,240,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(201,162,79,.35);
     border-radius:20px;padding:24px 20px 26px;box-shadow:0 20px 40px -24px rgba(150,90,80,.35),0 1px 0 #fff inset}
   .card h2{font-family:'Cinzel',serif;font-weight:400;letter-spacing:.28em;font-size:.95rem;color:var(--rose-d);display:flex;align-items:center;justify-content:center;gap:10px}
   .card h2 svg{width:30px;color:var(--rose-d)}
@@ -108,7 +108,7 @@
   .field input{border:0;outline:0;background:transparent;width:100%;padding:15px 0;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase}
   .field input::placeholder{text-transform:none;letter-spacing:.02em;color:#bba69f}
   .btn{border:0;cursor:pointer;border-radius:999px;padding:0 24px;font-family:'Cinzel',serif;letter-spacing:.16em;font-size:.85rem;color:#fff;
-    background:linear-gradient(135deg,#e7b3ba,var(--rose-d));box-shadow:0 10px 20px -10px rgba(190,100,115,.8);transition:transform .2s,filter .2s;white-space:nowrap}
+    background:linear-gradient(135deg,#f6c9d1,var(--rose-d));box-shadow:0 10px 20px -10px rgba(190,100,115,.8);transition:transform .2s,filter .2s;white-space:nowrap}
   .btn:hover{filter:brightness(1.05)} .btn:active{transform:scale(.97)} .btn:disabled{opacity:.6;cursor:wait}
   @media (max-width:420px){.code{flex-direction:column}.btn{padding:14px}}
   .msg{min-height:1.3em;margin-top:12px;font-style:italic;color:var(--rose-d)}
@@ -127,7 +127,7 @@
   .actions{display:flex;justify-content:center;gap:clamp(14px,6vw,40px);margin:28px 0 10px}
   .act{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink-soft);font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;
     text-transform:uppercase;text-align:left;line-height:1.5;cursor:pointer;background:none;border:0}
-  .act i{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:rgba(240,200,204,.55);color:var(--rose-d);transition:transform .3s;flex:none}
+  .act i{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:rgba(248,214,221,.6);color:var(--rose-d);transition:transform .3s;flex:none}
   .act:hover i{transform:translateY(-3px) rotate(-6deg)}
   .act i svg{width:24px}
   @media (max-width:520px){.act{flex-direction:column;text-align:center}}
@@ -135,7 +135,7 @@
   .foot::before,.foot::after{content:"";width:90px;border-top:1px dashed var(--gold-l)}
   .sign{font-family:'Parisienne',cursive;font-size:1.6rem;color:var(--sage);margin-top:8px}
 
-  .modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(110,80,72,.35);backdrop-filter:blur(3px);
+  .modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(160,120,120,.3);backdrop-filter:blur(3px);
     opacity:0;visibility:hidden;transition:.35s}
   .modal.on{opacity:1;visibility:visible}
   .modal .card{max-width:420px;width:100%;background:var(--paper);transform:translateY(20px);transition:.35s}
@@ -153,10 +153,10 @@
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <linearGradient id="petal" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ece5d6"/><stop offset=".35" stop-color="#fffefb"/><stop offset="1" stop-color="#fff"/></linearGradient>
-  <linearGradient id="petalPink" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#efc9cd"/><stop offset=".4" stop-color="#fbe3e5"/><stop offset="1" stop-color="#fdf0f1"/></linearGradient>
-  <radialGradient id="disc" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ffe8a0"/><stop offset=".45" stop-color="#f3c040"/><stop offset="1" stop-color="#d9921a"/></radialGradient>
+  <linearGradient id="petalPink" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f6cdd5"/><stop offset=".4" stop-color="#fce4e9"/><stop offset="1" stop-color="#fdf0f1"/></linearGradient>
+  <radialGradient id="disc" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#fbdc7c"/><stop offset="1" stop-color="#ecbd52"/></radialGradient>
   <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a37b2c"/><stop offset=".45" stop-color="#f1dc9e"/><stop offset=".7" stop-color="#c9a24f"/><stop offset="1" stop-color="#a37b2c"/></linearGradient>
-  <linearGradient id="leafG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9c290"/><stop offset="1" stop-color="#5f7d4c"/></linearGradient>
+  <linearGradient id="leafG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8dbb6"/><stop offset="1" stop-color="#8fae7b"/></linearGradient>
   <linearGradient id="ribbonG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6d3d7"/><stop offset=".5" stop-color="#e9aeb6"/><stop offset="1" stop-color="#f3c7cc"/></linearGradient>
 </defs></svg>
 
@@ -270,10 +270,10 @@ function daisy(r=40,{petals=21,pink=false,layers=2,seed=Math.random()}={}){
     }
   }
   const cr=r*.3;
-  g+=`<circle r="${cr*1.08}" fill="#c9800f" opacity=".3"/><circle r="${cr}" fill="url(#disc)"/>`;
+  g+=`<circle r="${cr*1.08}" fill="#e3b04a" opacity=".3"/><circle r="${cr}" fill="url(#disc)"/>`;
   for(let i=0;i<Math.min(60,Math.round(cr*3));i++){
     const t=i*137.5*Math.PI/180, d=Math.sqrt(i/Math.round(cr*3))*cr*.85;
-    g+=`<circle cx="${(Math.cos(t)*d).toFixed(2)}" cy="${(Math.sin(t)*d).toFixed(2)}" r="${(cr*.06).toFixed(2)}" fill="#a96608" opacity=".4"/>`;
+    g+=`<circle cx="${(Math.cos(t)*d).toFixed(2)}" cy="${(Math.sin(t)*d).toFixed(2)}" r="${(cr*.06).toFixed(2)}" fill="#d49a32" opacity=".35"/>`;
   }
   return g;
 }
@@ -298,7 +298,7 @@ $('flowerClipPath').setAttribute('d',flowerPath(200,205,106,88));
 
 /* foto da Cecília; sem foto, mostra um campinho de margaridas */
 const img=new Image();
-img.onload=()=>{$('photoBox').innerHTML=`<image href="${esc(CONFIG.foto)}" width="400" height="400" preserveAspectRatio="xMidYMid slice"/>`};
+img.onload=()=>{$('photoBox').innerHTML=`<image href="${esc(CONFIG.foto)}" width="400" height="400" preserveAspectRatio="xMidYMin slice"/>`};
 img.onerror=()=>{$('photoBox').innerHTML=[[110,160,46],[280,130,40],[200,270,60],[80,300,30],[320,290,34]].map(([x,y,r])=>`<g transform="translate(${x} ${y})"><g class="spin" style="animation-duration:${rnd(40,70).toFixed(0)}s">${daisy(r)}</g></g>`).join('')};
 img.src=CONFIG.foto;
 
@@ -319,7 +319,7 @@ function border(el){
       const bend=rnd(10,40);
       html+=`<div class="stem" style="left:${x}px;top:${baseY-len}px;--a:${rnd(2,5).toFixed(1)}deg;animation-duration:${rnd(3,6).toFixed(1)}s;animation-delay:-${rnd(0,5).toFixed(1)}s">
         <svg width="${r*2.6+bend}" height="${len+r}" viewBox="${-r*1.3} ${-r} ${r*2.6+bend} ${len+r}" style="overflow:visible">
-          <path d="M${-bend*.3} ${len} Q ${bend*.4} ${len/2} 0 0" stroke="#7c9a62" stroke-width="1.6" fill="none"/>
+          <path d="M${-bend*.3} ${len} Q ${bend*.4} ${len/2} 0 0" stroke="#a3bd91" stroke-width="1.6" fill="none"/>
           ${leaf(-bend*.1,len*.62,200,r/22)}${leaf(0,len*.4,-30,r/26)}
           <g transform="rotate(${rnd(-20,20).toFixed(0)}) scale(1 ${rnd(.75,1).toFixed(2)})">${daisy(r,{petals:r>24?20:15,layers:r>22?2:1,pink})}</g></svg></div>`;
     }
@@ -333,9 +333,9 @@ borders(); let rz; addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout
 const beeSVG=`<svg viewBox="-32 -28 64 56"><g class="body">
   <ellipse class="wing" cx="-6" cy="-14" rx="8" ry="12" fill="#eef7ff" fill-opacity=".85" stroke="#b9cbd6" stroke-width=".8" transform="rotate(-20 -6 -14)"/>
   <ellipse class="wing" cx="6" cy="-15" rx="8" ry="12" fill="#eef7ff" fill-opacity=".85" stroke="#b9cbd6" stroke-width=".8" transform="rotate(18 6 -15)"/>
-  <ellipse cx="0" cy="4" rx="20" ry="14" fill="#f5c542"/>
+  <ellipse cx="0" cy="4" rx="20" ry="14" fill="#fbd96b"/>
   <path d="M-8 -9 q-3 13 0 26M2 -10 q-3 14 0 28M11 -7 q-2 11 0 22" stroke="#3b2a20" stroke-width="5" fill="none" clip-path="inset(0)"/>
-  <circle cx="18" cy="0" r="10" fill="#f5c542"/><circle cx="21" cy="-2" r="1.8" fill="#3b2a20"/><path d="M18 4 q3 3 6 0" stroke="#3b2a20" stroke-width="1.2" fill="none"/>
+  <circle cx="18" cy="0" r="10" fill="#fbd96b"/><circle cx="21" cy="-2" r="1.8" fill="#3b2a20"/><path d="M18 4 q3 3 6 0" stroke="#3b2a20" stroke-width="1.2" fill="none"/>
   <circle cx="16" cy="3" r="2" fill="#f2a1a8" opacity=".7"/>
   <path d="M16 -9 q-2 -8 -6 -10M22 -8 q2 -8 6 -9" stroke="#3b2a20" stroke-width="1.2" fill="none"/><circle cx="10" cy="-19" r="1.6" fill="#3b2a20"/><circle cx="28" cy="-17" r="1.6" fill="#3b2a20"/>
   <path d="M-20 4 l-6 1 l6 2" fill="#3b2a20"/></g></svg>`;
