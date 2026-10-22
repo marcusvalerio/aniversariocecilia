@@ -78,7 +78,41 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 6s ease-in-out infinite;padding:0 .15em .1em;
     filter:drop-shadow(0 2px 1px rgba(255,255,255,.7))}
   @keyframes foil{0%,100%{background-position:100% 0}50%{background-position:0 0}}
-  .name .heart{display:inline-block;-webkit-text-fill-color:initial;font-size:.38em;vertical-align:.9em;margin-left:-.12em;color:var(--gold);animation:beat 1.6s ease-in-out infinite}
+  /* ---------- abertura: a margarida que floresce ---------- */
+  .bloom{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;overflow:hidden;
+    background:radial-gradient(circle at 50% 45%,#fffaf0 0%,#fdeef0 45%,#f6dfe4 100%);transition:opacity 1.2s ease 1.1s,visibility 0s 2.4s}
+  .bloom .rays{position:absolute;left:50%;top:45%;width:240vmax;height:240vmax;transform:translate(-50%,-50%);opacity:.35;transition:opacity 1.5s;
+    background:repeating-conic-gradient(from 0deg,rgba(255,236,170,.55) 0deg 4deg,transparent 4deg 15deg);animation:spin 80s linear infinite;
+    -webkit-mask:radial-gradient(circle,#000 0,transparent 45%);mask:radial-gradient(circle,#000 0,transparent 45%)}
+  .bloom svg{width:min(70vw,340px);height:min(70vw,340px);overflow:visible;transition:transform 1.6s cubic-bezier(.7,0,.3,1) 1.5s,opacity .8s 2.2s;position:relative;
+    filter:drop-shadow(0 20px 40px rgba(220,160,120,.35))}
+  .bloom .bud{animation:budpulse 2.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+  @keyframes budpulse{50%{transform:scale(1.06)}}
+  .bp{transform-box:fill-box;transform-origin:50% 100%;transform:scale(.5,.4);transition:transform 1.3s cubic-bezier(.3,1.5,.5,1)}
+  .bdisc{transform:scale(.55);transform-box:fill-box;transform-origin:center;transition:transform 1.2s cubic-bezier(.3,1.6,.5,1) .2s}
+  .bloom p{position:relative;text-align:center;font-family:'Cinzel',serif;letter-spacing:.38em;font-size:.78rem;color:var(--rose-d);font-weight:500;transition:opacity .6s}
+  .bloom p em{display:block;font-family:'Parisienne',cursive;font-style:normal;letter-spacing:0;font-size:1.7rem;color:var(--gold-d);margin-bottom:10px}
+  .bloom p b{font-weight:400;animation:breathe 2.2s ease-in-out infinite}
+  @keyframes breathe{50%{opacity:.35}}
+  .bloom.open{opacity:0;visibility:hidden;pointer-events:none}
+  .bloom.open .bud{animation:none}
+  .bloom.open .bp{transform:scale(1)}
+  .bloom.open .bdisc{transform:scale(1)}
+  .bloom.open svg{transform:scale(9) rotate(25deg);opacity:0}
+  .bloom.open .rays{opacity:1}
+  .bloom.open p{opacity:0}
+  .flash{position:fixed;inset:0;z-index:49;pointer-events:none;opacity:0;background:radial-gradient(circle,#fffbe8 0%,rgba(255,240,200,.9) 40%,rgba(255,255,255,0) 75%)}
+  .flash.go{animation:flash 1.8s ease-out 1.9s forwards}
+  @keyframes flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+  body.closed main,body.closed .magic{opacity:0}
+  main,.magic{transition:opacity 1.4s ease}
+  .burst{position:fixed;left:50%;top:45%;z-index:48;pointer-events:none;animation:burst cubic-bezier(.1,.7,.3,1) forwards}
+  @keyframes burst{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) rotate(var(--rot));opacity:0}}
+  .name.write{animation:foil 6s ease-in-out infinite,write 2.6s cubic-bezier(.6,0,.3,1) both}
+  @keyframes write{from{clip-path:inset(0 100% 0 0);filter:drop-shadow(0 0 0 #fff)}60%{filter:drop-shadow(0 0 14px rgba(255,226,140,.9))}to{clip-path:inset(0 -5% 0 0)}}
+  .dust{position:fixed;z-index:30;pointer-events:none;width:6px;height:6px;border-radius:50%;
+    background:radial-gradient(circle,#fffbe6 0,#f6d77c 45%,rgba(246,215,124,0) 70%);animation:dust 1.3s ease-out forwards}
+  @keyframes dust{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
   @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
   .age{font-family:'Cinzel',serif;letter-spacing:.5em;font-size:1.05rem;color:var(--gold-d);margin:4px 0 14px;padding-left:.5em}
   .lead{font-family:'Parisienne',cursive;font-size:clamp(1.45rem,6.2vw,1.9rem);line-height:1.35;color:var(--sage);max-width:26ch;margin:0 auto;text-wrap:balance}
@@ -157,7 +191,7 @@
   @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition-duration:.01s!important}.bee,.trail{display:none}}
 </style>
 </head>
-<body>
+<body class="closed">
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <linearGradient id="petal" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ece5d6"/><stop offset=".35" stop-color="#fffefb"/><stop offset="1" stop-color="#fff"/></linearGradient>
@@ -168,6 +202,12 @@
   <linearGradient id="ribbonG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6d3d7"/><stop offset=".5" stop-color="#e9aeb6"/><stop offset="1" stop-color="#f3c7cc"/></linearGradient>
 </defs></svg>
 
+<div class="bloom" id="bloom" role="button" aria-label="Abrir convite">
+  <div class="rays"></div>
+  <svg viewBox="-110 -110 220 220"><g class="bud" id="bloomFlower"></g></svg>
+  <p><em>Um jardim inteiro floresceu para ela</em><b>toque para florescer</b></p>
+</div>
+<div class="flash" id="flash"></div>
 <div class="bg"></div>
 <div class="border l" id="borderL"></div>
 <div class="border r" id="borderR"></div>
@@ -194,7 +234,7 @@
     </svg>
   </div>
 
-  <h1 class="name"><span id="dName">Cecília</span><span class="heart">♡</span></h1>
+  <h1 class="name"><span id="dName">Cecília</span></h1>
   <div class="age">1 ANINHO</div>
   <p class="lead">Há 1 ano o jardim dos meus pais está em flor, eles dizem com carinho:<br>nossa filha é um <b>Amor</b>.</p>
   <svg class="tiny-heart" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-8-5-8-11a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 6-8 11-8 11z"/></svg>
@@ -387,6 +427,48 @@ if(!reduce){
   for(let i=0;i<4;i++) setTimeout(petal,i*600);
   setInterval(petal,3200); setInterval(()=>heart(),6000);
   addEventListener('click',e=>{if(!e.target.closest('button,a,input,.modal'))for(let i=0;i<5;i++)setTimeout(()=>heart(e.clientX,e.clientY),i*80)});
+}
+
+
+/* ---------- abertura: a margarida floresce, a câmera atravessa o miolo ---------- */
+(function(){
+  const n=26; let g='';
+  for(let L=1;L>=0;L--) for(let i=0;i<n-L*4;i++){
+    const a=360/(n-L*4)*i+L*7, l=(L?88:100)*(0.94+Math.random()*.08), w=13;
+    g+=`<g transform="rotate(${a.toFixed(1)})"><path class="bp" style="transition-delay:${(i/(n-L*4)*.7+L*.25).toFixed(2)}s" d="M0 -18 C ${w} -30, ${w*1.1} ${-l*.85}, 0 ${-l} C ${-w*1.1} ${-l*.85}, ${-w} -30, 0 -18Z" fill="${L?'url(#petalPink)':'url(#petal)'}" stroke="#e6d6cc" stroke-width=".5"/></g>`;
+  }
+  g+=`<g class="bdisc">${daisy(100,{petals:0,layers:0}).replace(/^.*?(<circle)/,'$1')}</g>`;
+  $('bloomFlower').innerHTML=g;
+  const open=()=>{
+    if(document.body.classList.contains('opening'))return; document.body.classList.add('opening');
+    $('bloom').classList.add('open'); $('flash').classList.add('go');
+    setTimeout(()=>{
+      document.body.classList.remove('closed');
+      for(let i=0;i<70;i++){
+        const p=document.createElementNS(NS,'svg'), sz=rnd(12,30), ang=rnd(0,Math.PI*2), dist=rnd(.35,.9)*Math.max(innerWidth,innerHeight);
+        p.setAttribute('viewBox','-5 -12 10 13'); p.setAttribute('width',sz); p.setAttribute('height',sz*1.3); p.classList.add('burst');
+        p.innerHTML=`<path d="M0 0 C 4 -2, 4 -9, 0 -12 C -4 -9, -4 -2, 0 0Z" fill="${Math.random()<.4?'url(#petalPink)':'url(#petal)'}"/>`;
+        p.style.setProperty('--tx',Math.cos(ang)*dist+'px'); p.style.setProperty('--ty',Math.sin(ang)*dist+'px'); p.style.setProperty('--rot',rnd(-720,720)+'deg');
+        p.style.animationDuration=rnd(1.6,3.2)+'s'; document.body.appendChild(p); p.addEventListener('animationend',()=>p.remove());
+      }
+      const nm=document.querySelector('.name'); nm.classList.remove('write'); void nm.offsetWidth; nm.classList.add('write');
+    },2100);
+    setTimeout(()=>$('bloom').remove(),4000);
+  };
+  if(reduce){$('bloom').remove();document.body.classList.remove('closed');return}
+  $('bloom').addEventListener('click',open);
+})();
+
+/* ---------- poeira dourada que segue o dedo ---------- */
+if(!reduce){
+  let lastDust=0;
+  const dust=(x,y)=>{const now=performance.now(); if(now-lastDust<28)return; lastDust=now;
+    for(let i=0;i<2;i++){const d=document.createElement('div'); d.className='dust'; const sz=rnd(4,9);
+      Object.assign(d.style,{left:x-sz/2+'px',top:y-sz/2+'px',width:sz+'px',height:sz+'px'});
+      d.style.setProperty('--dx',rnd(-24,24)+'px'); d.style.setProperty('--dy',rnd(10,50)+'px');
+      document.body.appendChild(d); d.addEventListener('animationend',()=>d.remove())}};
+  addEventListener('pointermove',e=>dust(e.clientX,e.clientY),{passive:true});
+  addEventListener('touchmove',e=>{const t=e.touches[0]; if(t) dust(t.clientX,t.clientY)},{passive:true});
 }
 
 /* ---------- margarida mágica: chuva de pétalas + abelhinha passeando ---------- */
