@@ -35,7 +35,7 @@
 
   /* bordas laterais de margaridas */
   .border{position:fixed;top:0;bottom:0;width:min(30vw,190px);z-index:1;pointer-events:none}
-  .border.l{left:0} @media (max-width:600px){.border{width:24vw;opacity:.8}}
+  .border.l{left:0} @media (max-width:600px){.border{width:20vw;opacity:.55}}
   .border.l{left:0} .border.r{right:0;transform:scaleX(-1)}
   .stem{position:absolute;transform-origin:50% 100%;animation:sway ease-in-out infinite alternate}
   @keyframes sway{from{transform:rotate(calc(var(--a,3deg) * -1))}to{transform:rotate(var(--a,3deg))}}
@@ -73,7 +73,7 @@
   .ribbon{position:absolute;left:-14%;top:58%;width:38%;z-index:3;animation:flutter 5s ease-in-out infinite;transform-origin:70% 30%}
   @keyframes flutter{50%{transform:rotate(-5deg) translateY(4px)}}
 
-  .name{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(5rem,26vw,8.4rem);line-height:.9;margin-top:-18px;position:relative;z-index:3;
+  .name{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(5rem,26vw,8.4rem);line-height:1.3;margin-top:4px;position:relative;z-index:3;
     background:linear-gradient(100deg,var(--gold-d) 0%,var(--gold) 28%,#f4dd9c 46%,var(--gold) 62%,var(--gold-d) 100%);background-size:220% 100%;
     -webkit-background-clip:text;background-clip:text;color:transparent;animation:foil 6s ease-in-out infinite;padding:0 .15em .1em;
     filter:drop-shadow(0 2px 1px rgba(255,255,255,.7))}
@@ -313,7 +313,7 @@ img.onerror=()=>{$('photoBox').innerHTML=[[110,160,46],[280,130,40],[200,270,60]
 img.src=CONFIG.foto;
 
 /* margaridas na moldura (como na arte) */
-$('frameDaisies').innerHTML=[[60,110,30,-20],[330,60,26,10],[360,240,28,0],[60,300,22,0],[315,345,30,15],[210,20,18,0]].map(([x,y,r,rot],i)=>
+$('frameDaisies').innerHTML=[[60,110,26,-20],[340,70,22,10],[318,340,26,15]].map(([x,y,r,rot],i)=>
   `<g transform="translate(${x} ${y})">${leaf(-r*.6,r*.5,150+rot,r/22)}${leaf(r*.4,r*.6,40+rot,r/24)}
     <g class="spin" style="animation-duration:${30+i*7}s;animation-direction:${i%2?'reverse':'normal'}">${daisy(r,{petals:r>24?20:15,pink:i===5})}</g></g>`).join('');
 
@@ -321,10 +321,10 @@ $('frameDaisies').innerHTML=[[60,110,30,-20],[330,60,26,10],[360,240,28,0],[60,3
 function border(el){
   const H=innerHeight, W=el.clientWidth;
   let html='';
-  const clusters=Math.ceil(H/170)+1;
+  const small=innerWidth<600, gap=small?300:190, clusters=Math.ceil(H/gap)+1;
   for(let c=0;c<clusters;c++){
-    const baseY=c*170+rnd(-20,30);
-    for(let k=0;k<3;k++){
+    const baseY=c*gap+rnd(-20,30);
+    for(let k=0;k<(small?2:3);k++){
       const r=rnd(16,32)*Math.min(1,W/190+.15), len=rnd(70,140), x=rnd(-10,W*.55), pink=Math.random()<.25;
       const bend=rnd(10,40);
       html+=`<div class="stem" style="left:${x}px;top:${baseY-len}px;--a:${rnd(2,5).toFixed(1)}deg;animation-duration:${rnd(3,6).toFixed(1)}s;animation-delay:-${rnd(0,5).toFixed(1)}s">
@@ -351,12 +351,12 @@ const beeSVG=`<svg viewBox="-32 -28 64 56"><g class="body">
   <path d="M-20 4 l-6 1 l6 2" fill="#3b2a20"/></g></svg>`;
 if(!reduce){
   const trail=$('trail');
-  [{ox:.12,oy:.13,ax:.1,ay:.06,sp:.00045},{ox:.85,oy:.2,ax:.09,ay:.08,sp:.00038},{ox:.5,oy:.62,ax:.38,ay:.12,sp:.00022}].forEach((c,bi)=>{
+  [{ox:.12,oy:.13,ax:.1,ay:.06,sp:.00045},{ox:.85,oy:.55,ax:.09,ay:.1,sp:.00038}].forEach((c,bi)=>{
     const b=document.createElement('div'); b.className='bee'; b.innerHTML=beeSVG; document.body.appendChild(b);
     const pts=[]; let t=rnd(0,1e4), last=performance.now(), px=0;
     const line=document.createElementNS(NS,'polyline');
     line.setAttribute('fill','none');line.setAttribute('stroke','#c9a24f');line.setAttribute('stroke-width','1.2');
-    line.setAttribute('stroke-dasharray','3 5');line.setAttribute('stroke-linecap','round');line.setAttribute('opacity','.7');
+    line.setAttribute('stroke-dasharray','3 5');line.setAttribute('stroke-linecap','round');line.setAttribute('opacity','.45');
     trail.appendChild(line);
     (function loop(now){
       t+=now-last; last=now;
@@ -364,7 +364,7 @@ if(!reduce){
       const y=(c.oy+Math.sin(t*c.sp*1.6+bi)*c.ay+Math.cos(t*c.sp*3.1)*.015)*innerHeight;
       const dir=x<px?-1:1; px=x;
       b.style.transform=`translate(${x-31}px,${y-27}px) scaleX(${dir})`;
-      if(!pts.length||Math.hypot(pts.at(-1)[0]-x,pts.at(-1)[1]-y)>6){pts.push([x,y]);if(pts.length>40)pts.shift();
+      if(!pts.length||Math.hypot(pts.at(-1)[0]-x,pts.at(-1)[1]-y)>6){pts.push([x,y]);if(pts.length>18)pts.shift();
         line.setAttribute('points',pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' '))}
       requestAnimationFrame(loop);
     })(last);
@@ -384,8 +384,8 @@ if(!reduce){
     Object.assign(h.style,{left:(x??rnd(5,95)*innerWidth/100)+'px',top:(y??rnd(60,95)*innerHeight/100)+'px',fontSize:rnd(12,22)+'px',animationDuration:rnd(5,8)+'s'});
     h.style.setProperty('--dx',rnd(-60,60)+'px'); document.body.appendChild(h); h.addEventListener('animationend',()=>h.remove());
   };
-  for(let i=0;i<8;i++) setTimeout(petal,i*400);
-  setInterval(petal,1600); setInterval(()=>heart(),2600);
+  for(let i=0;i<4;i++) setTimeout(petal,i*600);
+  setInterval(petal,3200); setInterval(()=>heart(),6000);
   addEventListener('click',e=>{if(!e.target.closest('button,a,input,.modal'))for(let i=0;i<5;i++)setTimeout(()=>heart(e.clientX,e.clientY),i*80)});
 }
 
