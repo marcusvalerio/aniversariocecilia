@@ -267,19 +267,23 @@
 
   <section class="card reveal" id="rsvp">
     <h2><svg viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M20 10C12 1 3 2 4 9s10 5 16 1zM20 10c8-9 17-8 16-1s-10 5-16 1zM20 10l-7 9M20 10l7 9"/><circle cx="20" cy="10" r="2"/></svg>CONFIRME SUA PRESENÇA</h2>
-    <p class="d">Conta pra gente quem vem celebrar! A confirmação vai direto para o WhatsApp da mamãe.</p>
-    <form id="waForm">
-      <label class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5"/></svg>
-        <input id="who" autocomplete="name" placeholder="Seu nome (ou da família)" aria-label="Seu nome" maxlength="80"></label>
-      <div class="count-row">
-        <span>Quantas pessoas?</span>
-        <div class="stepper"><button type="button" id="minus" aria-label="Menos">−</button><b id="qty">1</b><button type="button" id="plus" aria-label="Mais">+</button></div>
+    <div id="step1">
+      <p class="d">Digite o código da sua família para acessar a lista de convidados e confirmar quem poderá estar com a gente.</p>
+      <form class="code" id="codeForm">
+        <label class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="3"/><circle cx="5" cy="10" r="2.2"/><circle cx="19" cy="10" r="2.2"/><path d="M6 20c0-3.5 2.7-6 6-6s6 2.5 6 6M1.5 19c0-2.6 1.6-4.4 3.8-4.6M22.5 19c0-2.6-1.6-4.4-3.8-4.6"/></svg>
+          <input id="code" autocomplete="off" placeholder="Ex.: CEC-1234" aria-label="Código da família" maxlength="24"></label>
+        <button class="btn" id="go">ACESSAR ›</button>
+      </form>
+    </div>
+    <div id="step2" hidden>
+      <p class="fam" id="famName"></p>
+      <p class="d" style="margin-bottom:12px">Marque quem vem celebrar com a gente:</p>
+      <div class="guests" id="guests"></div>
+      <div class="code" style="justify-content:center;margin-top:16px">
+        <button class="btn" id="save" style="padding:14px 28px">CONFIRMAR</button>
       </div>
-      <div class="wa-btns">
-        <button class="btn wa" id="yes" type="submit">VOU, SIM! 🌼</button>
-        <button class="btn ghost" id="no" type="button">Não poderei ir</button>
-      </div>
-    </form>
+      <button class="act" id="back" style="margin:14px auto 0;justify-content:center">‹ usar outro código</button>
+    </div>
     <p class="msg" id="msg" role="status"></p>
   </section>
 
@@ -549,23 +553,42 @@ $('giftBtn').onclick=()=>$('gift').classList.add('on');
 $('giftClose').onclick=()=>$('gift').classList.remove('on');
 $('gift').onclick=e=>{if(e.target===$('gift'))$('gift').classList.remove('on')};
 
-/* ---------- confirmação pelo WhatsApp da mamãe ---------- */
-const WA='5521974598210';
-let qty=1;
+/* ---------- RSVP por código da família ---------- */
+let code='', fam=null;
 const msg=(t,ok)=>{$('msg').textContent=t||'';$('msg').className='msg'+(ok?' ok':'')};
-$('minus').onclick=()=>{qty=Math.max(1,qty-1);$('qty').textContent=qty};
-$('plus').onclick=()=>{qty=Math.min(20,qty+1);$('qty').textContent=qty};
-function sendWA(going){
-  const who=$('who').value.trim();
-  if(who.length<2){msg('Escreva seu nome para a mamãe saber quem é 💛');$('who').focus();return}
-  const text=going
-    ?`Oi! 🌼 Aqui é ${who}. Confirmo presença no 1 aninho da ${CONFIG.nome}! Seremos ${qty} ${qty>1?'pessoas':'pessoa'}. 💛`
-    :`Oi! Aqui é ${who}. Infelizmente não poderei ir ao 1 aninho da ${CONFIG.nome}, mas desejo muitas felicidades! 🌼`;
-  msg('Abrindo o WhatsApp…',true);
-  location.href=`https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
+async function post(url,body){
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  let d={}; try{d=await r.json()}catch(e){}
+  if(!r.ok) throw Error(d.error||'Não foi possível conectar agora. Tente novamente.');
+  return d;
 }
-$('waForm').onsubmit=e=>{e.preventDefault();sendWA(true)};
-$('no').onclick=()=>sendWA(false);
+$('codeForm').onsubmit=async e=>{
+  e.preventDefault(); const c=$('code').value.trim().toUpperCase();
+  if(!/^[A-Z0-9-]{5,24}$/.test(c)) return msg('Digite um código válido, como CEC-1234.');
+  $('go').disabled=true; msg('Procurando seu convite…');
+  try{
+    fam=await post('/api/family',{code:c}); code=c;
+    fam.guests.forEach(g=>{if(g.attending===null||g.attending===undefined)g.attending=true});
+    $('famName').textContent=fam.family; renderGuests();
+    $('step1').hidden=true; $('step2').hidden=false; msg('');
+  }catch(err){msg(err.message)} finally{$('go').disabled=false}
+};
+function renderGuests(){
+  $('guests').innerHTML=fam.guests.map((g,i)=>`<div class="guest" style="animation-delay:${i*.08}s"><span>${esc(g.name)}</span>
+    <div class="seg" data-i="${i}"><button type="button" class="y" aria-pressed="${g.attending===true}">Vou 🌼</button><button type="button" class="n" aria-pressed="${g.attending===false}">Não vou</button></div></div>`).join('');
+}
+$('guests').onclick=e=>{const b=e.target.closest('.seg button');if(!b)return;fam.guests[b.parentNode.dataset.i].attending=b.classList.contains('y');renderGuests()};
+$('save').onclick=async()=>{
+  $('save').disabled=true; msg('Enviando…');
+  try{
+    const d=await post('/api/rsvp',{code,responses:fam.guests.map(g=>({id:g.id,attending:g.attending}))});
+    msg(d.message||'Presença registrada. Obrigado!',true);
+    if(!reduce){const r=$('save').getBoundingClientRect();for(let i=0;i<14;i++)setTimeout(()=>{const h=document.createElement('div');h.className='heart-fly';h.textContent='♡';
+      Object.assign(h.style,{left:r.left+r.width/2+'px',top:r.top+'px',fontSize:rnd(14,26)+'px',animationDuration:rnd(2.5,4)+'s'});h.style.setProperty('--dx',rnd(-120,120)+'px');
+      document.body.appendChild(h);h.addEventListener('animationend',()=>h.remove())},i*60)}
+  }catch(err){msg(err.message)} finally{$('save').disabled=false}
+};
+$('back').onclick=()=>{$('step2').hidden=true;$('step1').hidden=false;$('code').value='';msg('')};
 
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
