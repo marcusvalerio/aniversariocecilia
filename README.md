@@ -14,7 +14,10 @@ que o convidado digita no convite para confirmar presença. Dá para copiar a me
 
 Configuração (uma vez, na Vercel → Settings → Environment Variables):
 - `DATABASE_URL`: string de conexão do Neon.
-- `ADMIN_TOKEN`: a senha do painel (escolha uma senha forte).
+- `ADMIN_USER`: o usuário do painel.
+- `ADMIN_PASSWORD`: a senha do painel.
+
+Usuário e senha ficam só na Vercel, nunca no código (o repositório não guarda a senha).
 
 Crie as tabelas rodando `db/schema.sql` no SQL Editor do Neon.
 

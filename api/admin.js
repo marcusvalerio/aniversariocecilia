@@ -6,7 +6,10 @@ const ABC="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const makeCode=()=>"CEC-"+Array.from(crypto.randomBytes(5),b=>ABC[b%ABC.length]).join("");
 module.exports=async(req,res)=>{
  res.setHeader("Cache-Control","no-store");
- if(!process.env.ADMIN_TOKEN||!safeEqual(req.headers["x-admin-token"],process.env.ADMIN_TOKEN))return res.status(401).json({error:"Acesso administrativo não autorizado."});
+ const pass=process.env.ADMIN_PASSWORD||process.env.ADMIN_TOKEN,user=String(process.env.ADMIN_USER||"").trim().toLowerCase();
+ if(!pass||!user)return res.status(500).json({error:"Configure ADMIN_USER e ADMIN_PASSWORD na Vercel."});
+ const okUser=safeEqual(String(req.headers["x-admin-user"]||"").trim().toLowerCase(),user),okPass=safeEqual(req.headers["x-admin-token"],pass);
+ if(!okUser||!okPass)return res.status(401).json({error:"Usuário ou senha incorretos."});
  try{
   if(req.method==="GET"){
    const q=await pool.query("SELECT f.id,f.family_name,f.invite_code,f.created_at,g.id AS guest_id,g.full_name,g.sort_order,r.attending,r.updated_at FROM families f LEFT JOIN guests g ON g.family_id=f.id LEFT JOIN rsvps r ON r.guest_id=g.id ORDER BY f.created_at DESC,g.sort_order,g.full_name");
