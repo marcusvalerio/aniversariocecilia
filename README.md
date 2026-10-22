@@ -13,13 +13,10 @@ Lá você cadastra convites **em grupo** (família, vários nomes) ou **individu
 que o convidado digita no convite para confirmar presença. Dá para copiar a mensagem pronta ou enviar direto pelo WhatsApp.
 
 Configuração (uma vez, na Vercel → Settings → Environment Variables):
-- `DATABASE_URL`: string de conexão do Neon.
-- `ADMIN_USER`: o usuário do painel.
-- `ADMIN_PASSWORD`: a senha do painel.
+- `DATABASE_URL`: string de conexão do Neon (banco `cecilia`).
 
-Usuário e senha ficam só na Vercel, nunca no código (o repositório não guarda a senha).
-
-Crie as tabelas rodando `db/schema.sql` no SQL Editor do Neon.
+As contas do painel ficam na tabela `admin_users` do banco, com a senha guardada só como hash (scrypt).
+Para criar as tabelas, rode `db/schema.sql` no SQL Editor do Neon.
 
 ## Como testar
 

@@ -20,3 +20,10 @@ CREATE TABLE IF NOT EXISTS rsvps (
   attending  boolean NOT NULL,
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Contas do painel /admin (senha guardada só como hash scrypt)
+CREATE TABLE IF NOT EXISTS admin_users (
+  username      text PRIMARY KEY,
+  password_hash text NOT NULL,
+  created_at    timestamptz NOT NULL DEFAULT now()
+);

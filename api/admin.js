@@ -1,15 +1,16 @@
 const { Pool } = require("pg");
 const crypto = require("crypto");
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-const safeEqual=(a,b)=>{const x=Buffer.from(String(a||"")),y=Buffer.from(String(b||""));return x.length===y.length&&crypto.timingSafeEqual(x,y)};
+// hash no formato scrypt$<salt hex>$<hash hex>
+const checkPassword=(pass,stored)=>{const [alg,salt,hash]=String(stored).split("$");if(alg!=="scrypt"||!salt||!hash)return false;const h=crypto.scryptSync(pass,Buffer.from(salt,"hex"),32);const e=Buffer.from(hash,"hex");return e.length===h.length&&crypto.timingSafeEqual(h,e)};
 const ABC="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const makeCode=()=>"CEC-"+Array.from(crypto.randomBytes(5),b=>ABC[b%ABC.length]).join("");
 module.exports=async(req,res)=>{
  res.setHeader("Cache-Control","no-store");
- const pass=process.env.ADMIN_PASSWORD||process.env.ADMIN_TOKEN,user=String(process.env.ADMIN_USER||"").trim().toLowerCase();
- if(!pass||!user)return res.status(500).json({error:"Configure ADMIN_USER e ADMIN_PASSWORD na Vercel."});
- const okUser=safeEqual(String(req.headers["x-admin-user"]||"").trim().toLowerCase(),user),okPass=safeEqual(req.headers["x-admin-token"],pass);
- if(!okUser||!okPass)return res.status(401).json({error:"Usuário ou senha incorretos."});
+ const name=String(req.headers["x-admin-user"]||"").trim().toLowerCase(),pass=String(req.headers["x-admin-token"]||"");
+ let ok=false;
+ try{const a=await pool.query("SELECT password_hash FROM admin_users WHERE lower(username)=$1",[name]);ok=!!a.rowCount&&checkPassword(pass,a.rows[0].password_hash)}catch(e){console.error(e);return res.status(500).json({error:"Não foi possível validar o acesso."})}
+ if(!ok)return res.status(401).json({error:"Usuário ou senha incorretos."});
  try{
   if(req.method==="GET"){
    const q=await pool.query("SELECT f.id,f.family_name,f.invite_code,f.created_at,g.id AS guest_id,g.full_name,g.sort_order,r.attending,r.updated_at FROM families f LEFT JOIN guests g ON g.family_id=f.id LEFT JOIN rsvps r ON r.guest_id=g.id ORDER BY f.created_at DESC,g.sort_order,g.full_name");
