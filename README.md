@@ -2,6 +2,10 @@
 
 Convite digital demonstrativo para o primeiro aniversário da Cecília.
 
+## Foto da Cecília
+
+Coloque a foto na raiz do projeto como `cecilia.jpg` (ou altere `CONFIG.foto` em `index.html`). Ela aparece recortada na moldura de flor; sem a foto, a moldura mostra margaridas.
+
 ## Como testar
 
 Abra `index.html` em um navegador moderno. A página é estática e não precisa de build ou variáveis de ambiente.
