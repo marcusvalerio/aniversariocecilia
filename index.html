@@ -81,7 +81,15 @@
   .name .heart{display:inline-block;-webkit-text-fill-color:initial;font-size:.38em;vertical-align:.9em;margin-left:-.12em;color:var(--gold);animation:beat 1.6s ease-in-out infinite}
   @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.2)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
   .age{font-family:'Cinzel',serif;letter-spacing:.5em;font-size:1.05rem;color:var(--gold-d);margin:4px 0 14px;padding-left:.5em}
-  .lead{font-family:'Parisienne',cursive;font-size:clamp(1.6rem,7vw,2.1rem);line-height:1.3;color:var(--sage)}
+  .lead{font-family:'Parisienne',cursive;font-size:clamp(1.45rem,6.2vw,1.9rem);line-height:1.35;color:var(--sage);max-width:26ch;margin:0 auto;text-wrap:balance}
+  .lead b{font-family:'Great Vibes',cursive;font-weight:400;font-size:1.45em;color:var(--gold-d)}
+  .magic{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:15;width:68px;height:68px;border:0;background:none;cursor:pointer;padding:0;
+    filter:drop-shadow(0 6px 10px rgba(200,140,150,.35));animation:wiggle 3.5s ease-in-out infinite}
+  .magic svg{width:100%;height:100%;overflow:visible}
+  .magic:active{transform:scale(.9)}
+  @keyframes wiggle{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-12deg) scale(1.06)}90%{transform:rotate(10deg)}95%{transform:rotate(-5deg)}}
+  .magic::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--gold-l);animation:ping 2.4s ease-out infinite}
+  @keyframes ping{from{opacity:.9;transform:scale(.7)}to{opacity:0;transform:scale(1.35)}}
   .tiny-heart{display:block;margin:10px auto 0;width:16px;color:var(--gold);animation:beat 2s ease-in-out infinite}
 
   .info{display:grid;grid-template-columns:repeat(3,1fr);margin:28px 0 26px;text-align:left}
@@ -188,7 +196,7 @@
 
   <h1 class="name"><span id="dName">Cecília</span><span class="heart">♡</span></h1>
   <div class="age">1 ANINHO</div>
-  <p class="lead">Venha celebrar comigo<br>em um dia muito especial!</p>
+  <p class="lead">Há 1 ano o jardim dos meus pais está em flor, eles dizem com carinho:<br>nossa filha é um <b>Amor</b>.</p>
   <svg class="tiny-heart" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-8-5-8-11a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 6-8 11-8 11z"/></svg>
 
   <section class="info reveal">
@@ -231,6 +239,8 @@
   <div class="foot">♡</div>
   <p class="sign" id="dSign"></p>
 </main>
+
+<button class="magic" id="magic" aria-label="Margarida mágica: soltar pétalas"><svg viewBox="-42 -42 84 84"><g class="spin" style="animation-duration:30s" id="magicDaisy"></g></svg></button>
 
 <div class="modal" id="gift" role="dialog" aria-modal="true" aria-labelledby="giftT">
   <div class="card">
@@ -378,6 +388,28 @@ if(!reduce){
   setInterval(petal,1600); setInterval(()=>heart(),2600);
   addEventListener('click',e=>{if(!e.target.closest('button,a,input,.modal'))for(let i=0;i<5;i++)setTimeout(()=>heart(e.clientX,e.clientY),i*80)});
 }
+
+/* ---------- margarida mágica: chuva de pétalas + abelhinha passeando ---------- */
+$('magicDaisy').innerHTML=daisy(40,{petals:22});
+function shower(){
+  const pink=()=>Math.random()<.5;
+  for(let i=0;i<40;i++) setTimeout(()=>{
+    const p=document.createElementNS(NS,'svg'), sz=rnd(12,22);
+    p.setAttribute('viewBox','-5 -12 10 13'); p.setAttribute('width',sz); p.setAttribute('height',sz*1.3); p.classList.add('petal-fall');
+    p.innerHTML=`<path d="M0 0 C 4 -2, 4 -9, 0 -12 C -4 -9, -4 -2, 0 0Z" fill="${pink()?'url(#petalPink)':'url(#petal)'}" stroke="#e2d2c6" stroke-width=".3"/>`;
+    p.style.left=rnd(0,100)+'vw'; p.style.animationDuration=rnd(4,7)+'s';
+    p.style.setProperty('--dx',rnd(-160,160)+'px'); p.style.setProperty('--rot',rnd(-700,700)+'deg');
+    document.body.appendChild(p); p.addEventListener('animationend',()=>p.remove());
+  },i*45);
+  const b=document.createElement('div'); b.className='bee'; b.style.zIndex=16; b.innerHTML=beeSVG; document.body.appendChild(b);
+  const t0=performance.now(), dur=6500, y0=rnd(.2,.6)*innerHeight;
+  (function fly(now){
+    const k=Math.min(1,(now-t0)/dur), x=innerWidth+40-(innerWidth+120)*k, y=y0+Math.sin(k*Math.PI*4)*60;
+    b.style.transform=`translate(${x-31}px,${y-27}px) scaleX(-1) rotate(${Math.cos(k*Math.PI*4)*12}deg)`;
+    if(k<1) requestAnimationFrame(fly); else b.remove();
+  })(t0);
+}
+$('magic').onclick=shower;
 
 /* ---------- dados ---------- */
 const dt=new Date(CONFIG.data), end=new Date(CONFIG.fim), up=s=>s.toUpperCase();
