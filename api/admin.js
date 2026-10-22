@@ -2,7 +2,8 @@ const { Pool } = require("pg");
 const crypto = require("crypto");
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 const safeEqual=(a,b)=>{const x=Buffer.from(String(a||"")),y=Buffer.from(String(b||""));return x.length===y.length&&crypto.timingSafeEqual(x,y)};
-const makeCode=()=> "CEC-"+crypto.randomBytes(3).toString("hex").toUpperCase();
+const ABC="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const makeCode=()=>"CEC-"+Array.from(crypto.randomBytes(5),b=>ABC[b%ABC.length]).join("");
 module.exports=async(req,res)=>{
  res.setHeader("Cache-Control","no-store");
  if(!process.env.ADMIN_TOKEN||!safeEqual(req.headers["x-admin-token"],process.env.ADMIN_TOKEN))return res.status(401).json({error:"Acesso administrativo não autorizado."});

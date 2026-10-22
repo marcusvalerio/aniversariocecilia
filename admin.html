@@ -1,16 +1,206 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fff8f1"><title>Painel · Jardim da Cecília</title><style>
-:root{--rose:#d97990;--ink:#543832;--cream:#fff8f1;--sage:#718c69;--gold:#b99a54}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.5 system-ui}main{max-width:1000px;margin:auto;padding:24px 16px 60px}h1,h2,h3{font-family:Georgia,serif;color:#75454b}h1{font-size:clamp(2.3rem,6vw,3.7rem);margin:.5rem 0}h2{font-size:1.7rem}a{color:#865e48}section,.family,.stat{background:#fffdf9;border:1px solid #edd5d0;border-radius:18px;padding:18px;margin:16px 0}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{min-width:0}input,textarea,button{font:inherit;padding:11px;border:1px solid #e5c8c4;border-radius:10px}input,textarea{background:#fffdfa;color:inherit}input{flex:1}button{background:var(--rose);color:white;border:0;cursor:pointer}button.secondary{background:#fff9f3;color:#77584d;border:1px solid #e5c8c4}button.danger{background:#9b4b4b}button:disabled{opacity:.55;cursor:wait}.muted{color:#92796f;font-size:.9rem}.status{background:#e8f2e5;color:#365d39;padding:12px;border-radius:10px}.error{background:#fff0ed;color:#8a4141;padding:12px;border-radius:10px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.stat{margin:0;padding:13px}.stat strong{display:block;font-size:1.8rem;color:#936f36}.stat span{font-size:.85rem;color:#92796f}.family{margin:12px 0}.family-head{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}.code{font-weight:750;letter-spacing:.1em;color:#8c6c2d}.guest{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid #f0e4dc}.guest-name{flex:1;min-width:140px}.pill{display:inline-block;border-radius:999px;padding:4px 9px;font-size:.8rem;background:#f2eee8}.yes{background:#e4f1df;color:#38603b}.no{background:#fbe8e6;color:#884c4a}.pending{background:#f7efcf;color:#79612a}.hidden{display:none!important}#families{margin-top:16px}.filters{margin:12px 0}.small{font-size:.82rem} @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.stats .stat:last-child{grid-column:span 2}.family-head{display:block}.guest button{font-size:.82rem;padding:8px}}
-</style></head><body><main><a href="/">← Voltar ao convite</a><h1>O jardim por trás das flores 🌼</h1><p class="muted">Painel privado para organizar os convites da Cecília e acompanhar as confirmações.</p>
-<section id="login"><h2>Acesso administrativo</h2><p class="muted">Use o token configurado nas variáveis de ambiente do projeto Vercel.</p><div class="row"><input id="token" type="password" placeholder="Token administrativo" autocomplete="current-password"><button id="connect">Entrar no painel</button></div><div id="message" aria-live="polite"></div></section>
-<div id="workspace" class="hidden"><div class="stats" id="stats"></div>
-<section><h2>Cadastrar nova família</h2><form id="form"><p><input id="familyName" placeholder="Nome da família (ex.: Família Oliveira)" required maxlength="120"></p><p class="muted">Um nome completo por linha (máximo de 30 pessoas por família).</p><textarea id="guests" placeholder="Nome do convidado 1&#10;Nome do convidado 2&#10;Nome do convidado 3" required rows="5" style="width:100%"></textarea><p><button type="submit">＋ Cadastrar família e gerar código</button></p></form><div id="created" aria-live="polite"></div></section>
-<section><div class="row" style="justify-content:space-between"><h2>Convidados e respostas</h2><button class="secondary" id="refresh">Atualizar lista</button></div><div class="row filters"><input id="search" placeholder="Buscar família, convidado ou código"><select id="filter" style="padding:11px;border:1px solid #e5c8c4;border-radius:10px;background:#fffdfa;color:inherit"><option value="all">Todas as respostas</option><option value="pending">Aguardando resposta</option><option value="yes">Confirmados</option><option value="no">Não vão</option></select></div><div id="families"></div></section>
-</div></main><script>
-const $=id=>document.getElementById(id);let token='',allFamilies=[];const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function api(method='GET',body){const r=await fetch('/api/admin',{method,headers:{'Content-Type':'application/json','x-admin-token':token},...(body?{body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw Error(d.error||'Falha ao comunicar com o servidor.');return d}
-async function load(){const d=await api();allFamilies=d.families;$('stats').innerHTML=[['Famílias',d.stats.families],['Convidados',d.stats.guests],['Confirmados',d.stats.confirmed],['Não vão',d.stats.declined],['Pendentes',d.stats.pending]].map(x=>'<div class="stat"><strong>'+x[1]+'</strong><span>'+x[0]+'</span></div>').join('');renderFamilies()}
-function renderFamilies(){const term=$('search').value.trim().toLowerCase(),filter=$('filter').value;const list=allFamilies.filter(f=>[f.name,f.code,...f.guests.map(g=>g.name)].join(' ').toLowerCase().includes(term)&& (filter==='all'||f.guests.some(g=>filter==='pending'?g.attending===null:filter==='yes'?g.attending===true:g.attending===false)));$('families').innerHTML=list.length?list.map(f=>'<article class="family"><div class="family-head"><div><h3>'+esc(f.name)+'</h3><p>Código: <span class="code">'+esc(f.code)+'</span> <button class="secondary small" data-copy="'+esc(f.code)+'">Copiar</button></p><p class="muted small">'+f.guests.length+' convidado(s) · criado em '+new Date(f.createdAt).toLocaleDateString('pt-BR')+'</p></div><div class="row"><button class="secondary small" data-action="rename" data-id="'+f.id+'">Editar família</button><button class="secondary small" data-action="regenerate-code" data-id="'+f.id+'">Novo código</button><button class="secondary small" data-action="add-guests" data-id="'+f.id+'">＋ Convidados</button><button class="danger small" data-action="delete-family" data-id="'+f.id+'">Excluir família</button></div></div><div>'+f.guests.map(g=>'<div class="guest"><span class="guest-name">'+esc(g.name)+'</span><span class="pill '+(g.attending===true?'yes':g.attending===false?'no':'pending')+'">'+(g.attending===true?'Confirmado':g.attending===false?'Não vai':'Pendente')+'</span><button class="secondary small" data-action="rename-guest" data-id="'+f.id+'" data-guest="'+g.id+'">Editar nome</button><button class="danger small" data-action="delete-guest" data-id="'+f.id+'" data-guest="'+g.id+'">Remover</button>'+(g.updatedAt?'<div class="muted small">Resposta: '+new Date(g.updatedAt).toLocaleString('pt-BR')+'</div>':'')+'</div>').join('')+'</div></article>').join(''):'<p class="muted">Nenhum resultado para esse filtro.</p>'}
-$('connect').onclick=async()=>{token=$('token').value.trim();if(!token)return;$('message').innerHTML='<p class="muted">Validando acesso…</p>';try{await load();$('workspace').classList.remove('hidden');$('login').classList.add('hidden')}catch(e){$('message').innerHTML='<p class="error">'+esc(e.message)+'</p>'}};$('token').addEventListener('keydown',e=>{if(e.key==='Enter')$('connect').click()});$('refresh').onclick=async()=>{try{await load()}catch(e){alert(e.message)}};$('search').oninput=renderFamilies;$('filter').onchange=renderFamilies;
-$('form').onsubmit=async e=>{e.preventDefault();const btn=e.submitter;btn.disabled=true;$('created').textContent='Cadastrando…';try{const guests=$('guests').value.split('\n').map(x=>x.trim()).filter(Boolean),d=await api('POST',{familyName:$('familyName').value,guests});$('created').innerHTML='<p class="status">Família cadastrada. Código: <strong class="code">'+esc(d.family.code)+'</strong> <button id="copy-new" class="secondary">Copiar código</button> — envie esse código apenas à família correta.</p>';$('copy-new').onclick=()=>navigator.clipboard.writeText(d.family.code);$('form').reset();await load()}catch(e){$('created').innerHTML='<p class="error">'+esc(e.message)+'</p>'}finally{btn.disabled=false}};
-$('families').onclick=async e=>{const copy=e.target.closest('[data-copy]');if(copy){await navigator.clipboard.writeText(copy.dataset.copy);copy.textContent='Copiado!';return}const b=e.target.closest('[data-action]');if(!b)return;const {action,id,guest}=b.dataset,f=allFamilies.find(x=>x.id===id);try{let body={action,familyId:id};if(action==='rename'){const name=prompt('Novo nome da família:',f.name);if(name===null)return;body.familyName=name}if(action==='regenerate-code'){if(!confirm('O código atual deixará de funcionar. Gerar outro?'))return}if(action==='add-guests'){const raw=prompt('Digite os nomes, um por linha:');if(raw===null)return;body.guests=raw.split('\n').map(x=>x.trim()).filter(Boolean)}if(action==='rename-guest'){const g=f.guests.find(x=>x.id===guest),name=prompt('Editar nome do convidado:',g?.name);if(name===null)return;body.guestId=guest;body.name=name}if(action==='delete-guest'){const g=f.guests.find(x=>x.id===guest);if(!confirm('Remover '+g?.name+' e sua resposta?'))return;body.guestId=guest}if(action==='delete-family'&&!confirm('Excluir a família, todos os convidados e confirmações? Essa ação não pode ser desfeita.'))return;b.disabled=true;const d=await api('PATCH',body);if(action==='regenerate-code')alert('Novo código: '+d.code+' — copie e envie à família.');await load()}catch(err){alert(err.message)}finally{b.disabled=false}};
-</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#fffcf6">
+<title>Painel · Cecília</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fffcf6;--card:#fffefb;--line:#f3dfe2;--ink:#6e5552;--soft:#a48e8a;--rose:#dc9aa8;--rose-l:#fbe6ea;--yel:#fbe7a6;--yel-d:#b8923f;--ok:#7fa36f;--ok-l:#eaf4e4;--no:#c47a86}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(60% 40% at 0 0,#fde6ea,transparent 70%),radial-gradient(50% 35% at 100% 10%,#fff1c9,transparent 70%),var(--paper);
+  background-attachment:fixed;color:var(--ink);font:15px/1.5 'Nunito',system-ui,sans-serif;min-height:100vh}
+main{max-width:860px;margin:auto;padding:24px 16px 70px}
+h1{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(2.6rem,9vw,3.6rem);color:var(--yel-d);margin:0;line-height:1.1}
+h2{font-size:1.1rem;margin:0 0 12px;color:var(--ink)}
+.sub{color:var(--soft);margin:2px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 10px 30px -22px rgba(190,120,130,.5)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,textarea,select,button{font:inherit;color:inherit;border-radius:12px}
+input,textarea,select{border:1px solid var(--line);background:#fff;padding:11px 13px;width:100%;outline-color:var(--rose)}
+.row input{flex:1;width:auto;min-width:160px}
+button{border:0;cursor:pointer;padding:11px 16px;background:var(--rose);color:#fff;font-weight:700;transition:filter .2s,transform .1s}
+button:hover{filter:brightness(1.04)} button:active{transform:scale(.97)} button:disabled{opacity:.55;cursor:wait}
+button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:600}
+button.mini{padding:6px 10px;font-size:.82rem;border-radius:9px}
+button.wa{background:#8fc38a}
+button.danger{background:#fff;color:var(--no);border:1px solid #f0cfd5}
+.hidden{display:none!important}
+.msg{margin-top:10px;padding:10px 12px;border-radius:10px}
+.msg.err{background:#fff0f1;color:#a04a5a}
+.msg.ok{background:var(--ok-l);color:#4d7340}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.6rem;color:var(--yel-d)}
+.stat span{font-size:.78rem;color:var(--soft)}
+.stat.y b{color:var(--ok)} .stat.n b{color:var(--no)}
+@media (max-width:560px){.stats{grid-template-columns:repeat(3,1fr)}.stat:nth-child(n+4){grid-column:span 1}}
+.tabs{display:inline-flex;background:var(--rose-l);padding:4px;border-radius:999px;margin-bottom:12px}
+.tabs button{background:transparent;color:var(--ink);padding:8px 16px;border-radius:999px;font-weight:600}
+.tabs button.on{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08);color:var(--rose)}
+label{display:block;font-weight:600;margin:10px 0 6px;font-size:.9rem}
+.hint{color:var(--soft);font-size:.85rem;margin:4px 0 0}
+.done{text-align:center;background:linear-gradient(135deg,#fff7df,#fde9ee);border:1px dashed var(--rose)}
+.bigcode{font-size:2rem;font-weight:700;letter-spacing:.14em;color:var(--yel-d);margin:4px 0 10px}
+.fam{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0;background:#fff}
+.fam-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.fam-h strong{font-size:1.05rem}
+.code{font-weight:700;letter-spacing:.1em;color:var(--yel-d);background:#fff8e2;border-radius:8px;padding:2px 8px;cursor:pointer;border:0;font-size:.95rem}
+.tag{font-size:.75rem;border-radius:999px;padding:2px 8px;background:var(--rose-l);color:var(--rose);font-weight:700;margin-left:6px}
+.g{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:6px 0;border-top:1px dashed var(--line)}
+.g:first-of-type{border-top:0}
+.st{font-size:.8rem;font-weight:700;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.st.y{background:var(--ok-l);color:#4d7340}.st.n{background:#fdecef;color:var(--no)}.st.p{background:#f6f1e8;color:var(--soft)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.empty{text-align:center;color:var(--soft);padding:20px}
+</style>
+</head>
+<body><main>
+<h1>Painel da Cecília 🌼</h1>
+<p class="sub">Cadastre convidados, gere os códigos e acompanhe as confirmações.</p>
+
+<section class="card" id="login">
+  <h2>Entrar</h2>
+  <form class="row" id="loginForm"><input id="token" type="password" placeholder="Senha do painel" autocomplete="current-password"><button>Entrar</button></form>
+  <div id="loginMsg"></div>
+</section>
+
+<div id="app" class="hidden">
+  <div class="stats" id="stats"></div>
+
+  <section class="card">
+    <h2>Novo convite</h2>
+    <div class="tabs" role="tablist">
+      <button type="button" class="on" data-mode="group">👨‍👩‍👧 Grupo / família</button>
+      <button type="button" data-mode="solo">🙋 Individual</button>
+    </div>
+    <form id="form">
+      <div id="groupFields">
+        <label for="familyName">Nome do grupo</label>
+        <input id="familyName" placeholder="Ex.: Família Oliveira" maxlength="120">
+        <label for="guests">Convidados (um nome por linha)</label>
+        <textarea id="guests" rows="5" placeholder="Ana Oliveira&#10;Carlos Oliveira&#10;Beatriz Oliveira"></textarea>
+        <p class="hint">Até 30 pessoas. Cada uma confirma individualmente com o mesmo código.</p>
+      </div>
+      <div id="soloFields" class="hidden">
+        <label for="soloName">Nome do convidado</label>
+        <input id="soloName" placeholder="Ex.: Mariana Souza" maxlength="120">
+      </div>
+      <p><button type="submit" id="create">＋ Gerar código de confirmação</button></p>
+    </form>
+    <div id="created"></div>
+  </section>
+
+  <section class="card">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Convites e respostas</h2><button class="ghost mini" id="refresh">↻ Atualizar</button></div>
+    <div class="row" style="margin:12px 0 4px">
+      <input id="search" placeholder="Buscar nome ou código">
+      <select id="filter" style="width:auto"><option value="all">Todos</option><option value="pending">Aguardando</option><option value="yes">Confirmados</option><option value="no">Não vão</option></select>
+    </div>
+    <div id="families"></div>
+  </section>
+  <p style="text-align:center"><button class="ghost mini" id="logout">Sair do painel</button></p>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const SITE=location.origin;
+let token='',all=[],mode='group';
+try{token=sessionStorage.getItem('adm')||''}catch(e){}
+
+async function api(method='GET',body){
+  const r=await fetch('/api/admin',{method,headers:{'Content-Type':'application/json','x-admin-token':token},...(body?{body:JSON.stringify(body)}:{})});
+  let d={};try{d=await r.json()}catch(e){}
+  if(!r.ok)throw Error(d.error||'Falha ao comunicar com o servidor.');return d;
+}
+const waText=f=>`Olá${f.guests.length===1?', '+f.guests[0].name.split(' ')[0]:''}! 🌼\nVocê está convidado(a) para o 1 aninho da Cecília!\n\nAbra o convite: ${SITE}\nSeu código de confirmação: *${f.code}*`;
+const waLink=f=>'https://wa.me/?text='+encodeURIComponent(waText(f));
+
+async function load(){
+  const d=await api(); all=d.families; const s=d.stats;
+  $('stats').innerHTML=[['Convites',s.families,''],['Pessoas',s.guests,''],['Confirmados',s.confirmed,'y'],['Não vão',s.declined,'n'],['Aguardando',s.pending,'']]
+    .map(([l,v,c])=>`<div class="stat ${c}"><b>${v}</b><span>${l}</span></div>`).join('');
+  render();
+}
+function render(){
+  const t=$('search').value.trim().toLowerCase(), f=$('filter').value;
+  const list=all.filter(x=>[x.name,x.code,...x.guests.map(g=>g.name)].join(' ').toLowerCase().includes(t)
+    &&(f==='all'||x.guests.some(g=>f==='pending'?g.attending===null:f==='yes'?g.attending===true:g.attending===false)));
+  $('families').innerHTML=list.length?list.map(x=>{
+    const solo=x.guests.length===1&&x.guests[0].name===x.name;
+    return `<div class="fam"><div class="fam-h"><div><strong>${esc(x.name)}</strong><span class="tag">${solo?'individual':x.guests.length+' pessoas'}</span></div>
+      <button class="code" data-copy="${esc(x.code)}" title="Copiar código">${esc(x.code)}</button></div>
+      ${x.guests.map(g=>`<div class="g"><span>${esc(g.name)}</span><span class="row" style="gap:6px">
+        <span class="st ${g.attending===true?'y':g.attending===false?'n':'p'}">${g.attending===true?'Vai 🌼':g.attending===false?'Não vai':'Aguardando'}</span>
+        <button class="ghost mini" data-a="rename-guest" data-id="${x.id}" data-g="${g.id}" title="Editar nome">✎</button>
+        <button class="danger mini" data-a="delete-guest" data-id="${x.id}" data-g="${g.id}" title="Remover">✕</button></span></div>`).join('')}
+      <div class="acts">
+        <a href="${waLink(x)}" target="_blank" rel="noopener"><button class="wa mini">Enviar no WhatsApp</button></a>
+        <button class="ghost mini" data-a="add-guests" data-id="${x.id}">＋ Pessoas</button>
+        <button class="ghost mini" data-a="rename" data-id="${x.id}">Renomear</button>
+        <button class="ghost mini" data-a="regenerate-code" data-id="${x.id}">Novo código</button>
+        <button class="danger mini" data-a="delete-family" data-id="${x.id}">Excluir</button>
+      </div></div>`}).join(''):'<p class="empty">Nenhum convite por aqui ainda.</p>';
+}
+
+$('loginForm').onsubmit=async e=>{
+  e.preventDefault(); token=$('token').value.trim(); if(!token)return;
+  $('loginMsg').innerHTML='<p class="msg">Entrando…</p>';
+  try{await load();try{sessionStorage.setItem('adm',token)}catch(e){}show()}catch(err){$('loginMsg').innerHTML=`<p class="msg err">${esc(err.message)}</p>`}
+};
+function show(){$('login').classList.add('hidden');$('app').classList.remove('hidden')}
+$('logout').onclick=()=>{try{sessionStorage.removeItem('adm')}catch(e){}location.reload()};
+if(token) load().then(show).catch(()=>{token='';try{sessionStorage.removeItem('adm')}catch(e){}});
+
+document.querySelector('.tabs').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return; mode=b.dataset.mode;
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $('groupFields').classList.toggle('hidden',mode!=='group'); $('soloFields').classList.toggle('hidden',mode!=='solo');
+};
+
+$('form').onsubmit=async e=>{
+  e.preventDefault(); let familyName, guests;
+  if(mode==='solo'){familyName=$('soloName').value.trim();guests=[familyName]}
+  else{familyName=$('familyName').value.trim();guests=$('guests').value.split('\n').map(x=>x.trim()).filter(Boolean)}
+  if(familyName.length<2||!guests.length){$('created').innerHTML='<p class="msg err">Preencha o nome'+(mode==='group'?' do grupo e pelo menos um convidado':'')+'.</p>';return}
+  $('create').disabled=true; $('created').innerHTML='<p class="msg">Gerando código…</p>';
+  try{
+    const d=await api('POST',{familyName,guests});
+    const f={...d.family,guests:guests.map(name=>({name}))};
+    $('created').innerHTML=`<div class="card done"><div>Código de <b>${esc(f.name)}</b></div><div class="bigcode">${esc(f.code)}</div>
+      <div class="row" style="justify-content:center"><button class="ghost" data-copy="${esc(f.code)}">Copiar código</button>
+      <button class="ghost" data-copy-msg="1">Copiar mensagem</button>
+      <a href="${waLink(f)}" target="_blank" rel="noopener"><button class="wa">Enviar no WhatsApp</button></a></div></div>`;
+    $('created').dataset.msg=waText(f);
+    $('form').reset(); await load();
+  }catch(err){$('created').innerHTML=`<p class="msg err">${esc(err.message)}</p>`}
+  finally{$('create').disabled=false}
+};
+
+document.addEventListener('click',async e=>{
+  const c=e.target.closest('[data-copy],[data-copy-msg]'); if(!c)return;
+  const txt=c.dataset.copy??$('created').dataset.msg;
+  try{await navigator.clipboard.writeText(txt);const o=c.textContent;c.textContent='Copiado ✓';setTimeout(()=>c.textContent=o,1400)}catch(err){prompt('Copie:',txt)}
+});
+
+$('families').onclick=async e=>{
+  const b=e.target.closest('[data-a]'); if(!b)return;
+  const action=b.dataset.a, x=all.find(f=>f.id===b.dataset.id), g=x?.guests.find(y=>y.id===b.dataset.g), body={action,familyId:x.id};
+  if(action==='rename'){const n=prompt('Novo nome:',x.name);if(n===null)return;body.familyName=n}
+  if(action==='regenerate-code'&&!confirm('O código atual deixará de funcionar. Gerar outro?'))return;
+  if(action==='add-guests'){const n=prompt('Nomes a adicionar (separe por vírgula):');if(!n)return;body.guests=n.split(/[,\n]/).map(s=>s.trim()).filter(Boolean)}
+  if(action==='rename-guest'){const n=prompt('Nome do convidado:',g.name);if(n===null)return;body.guestId=g.id;body.name=n}
+  if(action==='delete-guest'){if(!confirm(`Remover ${g.name}?`))return;body.guestId=g.id}
+  if(action==='delete-family'&&!confirm(`Excluir o convite "${x.name}" e todas as respostas?`))return;
+  b.disabled=true;
+  try{const d=await api('PATCH',body);if(action==='regenerate-code')alert('Novo código: '+d.code);await load()}catch(err){alert(err.message)}finally{b.disabled=false}
+};
+$('search').oninput=render; $('filter').onchange=render; $('refresh').onclick=()=>load().catch(err=>alert(err.message));
+</script>
+</body>
+</html>

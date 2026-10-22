@@ -6,6 +6,18 @@ Convite digital demonstrativo para o primeiro aniversário da Cecília.
 
 Coloque a foto na raiz do projeto como `cecilia.jpg` (ou altere `CONFIG.foto` em `index.html`). Ela aparece recortada na moldura de flor; sem a foto, a moldura mostra margaridas.
 
+## Painel administrativo (oculto)
+
+Acesse `seusite.vercel.app/admin` — não há link para ele no convite e ele não aparece no Google.
+Lá você cadastra convites **em grupo** (família, vários nomes) ou **individuais**; cada convite gera um código `CEC-XXXXX`
+que o convidado digita no convite para confirmar presença. Dá para copiar a mensagem pronta ou enviar direto pelo WhatsApp.
+
+Configuração (uma vez, na Vercel → Settings → Environment Variables):
+- `DATABASE_URL`: string de conexão do Neon.
+- `ADMIN_TOKEN`: a senha do painel (escolha uma senha forte).
+
+Crie as tabelas rodando `db/schema.sql` no SQL Editor do Neon.
+
 ## Como testar
 
 Abra `index.html` em um navegador moderno. A página é estática e não precisa de build ou variáveis de ambiente.
