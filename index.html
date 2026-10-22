@@ -24,17 +24,19 @@
 
   /* ---------- fundo aquarelado ---------- */
   .bg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#fdf3ef;overflow:hidden}
-  .bg::before{content:"";position:absolute;inset:-4%;background:url(jardim.jpg) center 30%/cover no-repeat;filter:saturate(.75) brightness(1.08);
-    animation:kenburns 40s ease-in-out infinite alternate}
-  @keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.12) translate(-1.5%,-2%)}}
-  .bg::after{content:"";position:absolute;inset:0;
-    background:
-      radial-gradient(70% 45% at 50% 28%,rgba(255,250,244,.25),transparent 75%),
-      linear-gradient(180deg,rgba(255,246,240,.38) 0%,rgba(253,240,238,.62) 38%,rgba(253,240,240,.84) 60%,rgba(252,236,238,.9) 100%)}
+  .bg{background:
+      radial-gradient(40% 30% at 5% 2%,rgba(248,208,215,.55),transparent 70%),
+      radial-gradient(35% 25% at 100% 40%,rgba(253,236,170,.4),transparent 70%),
+      radial-gradient(60% 40% at 50% 0%,#fffaf3,transparent 70%),
+      linear-gradient(180deg,#fffcf6,#fdf3ef 55%,#fbe8ea)}
+  .meadow{position:absolute;left:-4%;right:-4%;bottom:0;height:24vh;pointer-events:none}
+  .meadow .hill{position:absolute;left:0;bottom:0;width:100%}
+  .meadow .stem{position:absolute;bottom:0}
+  .scatter{position:absolute;inset:0;opacity:.5}
 
   /* bordas laterais de margaridas */
   .border{position:fixed;top:0;bottom:0;width:min(30vw,190px);z-index:1;pointer-events:none}
-  .border.l{left:0} @media (max-width:600px){.border{display:none}}
+  .border.l{left:0} @media (max-width:600px){.border{width:18vw;opacity:.5}}
   .border.l{left:0} .border.r{right:0;transform:scaleX(-1)}
   .stem{position:absolute;transform-origin:50% 100%;animation:sway ease-in-out infinite alternate}
   @keyframes sway{from{transform:rotate(calc(var(--a,3deg) * -1))}to{transform:rotate(var(--a,3deg))}}
@@ -57,13 +59,14 @@
   .trail{position:fixed;inset:0;z-index:5;pointer-events:none;width:100%;height:100%}
 
   /* ---------- conteúdo ---------- */
-  main{position:relative;z-index:4;max-width:560px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px 60px;text-align:center}
+  main{position:relative;z-index:4;max-width:560px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px 22vh;text-align:center}
   .tagline{position:absolute;right:18px;top:26px;font-family:'Parisienne',cursive;font-size:1.35rem;line-height:1.15;color:var(--sage);transform:rotate(-6deg);
     animation:bob 4s ease-in-out infinite;z-index:2}
   .tagline span{display:block;font-size:.9rem;color:var(--gold)}
   @keyframes bob{50%{transform:rotate(-4deg) translateY(-5px)}}
 
-  .frame{position:relative;width:min(84vw,420px);aspect-ratio:1;margin:46px auto 0;animation:breathe 6s ease-in-out infinite}
+  .frame{position:relative;width:min(84vw,420px);aspect-ratio:1;margin:46px auto 0}
+  .frame .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;display:block}
   @keyframes breathe{50%{transform:scale(1.015)}}
   .frame svg.f{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
   .frame .deco{position:absolute;pointer-events:none}
@@ -80,7 +83,7 @@
   /* ---------- abertura: a margarida que floresce ---------- */
   .bloom{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;overflow:hidden;
     background:#fdeef0;transition:opacity 1.2s ease 1.1s,visibility 0s 2.4s}
-  .bloom::before{content:"";position:absolute;inset:-20px;background:radial-gradient(circle at 50% 45%,rgba(255,250,240,.55),rgba(250,225,230,.72) 70%),url(jardim.jpg) center/cover;filter:blur(5px)}
+  .bloom{background:radial-gradient(circle at 50% 45%,#fffaf0 0%,#fdeef0 50%,#f6dfe4 100%)}
   .bloom .bwrap{position:relative;display:grid;place-items:center}
   .bloom .rays{position:absolute;left:50%;top:50%;width:240vmax;height:240vmax;transform:translate(-50%,-50%);opacity:.35;transition:opacity 1.5s;
     background:repeating-conic-gradient(from 0deg,rgba(255,236,170,.55) 0deg 4deg,transparent 4deg 15deg);animation:spin 80s linear infinite;
@@ -221,7 +224,7 @@
   <p><em>Um jardim inteiro floresceu para ela</em><b>toque para florescer</b></p>
 </div>
 <div class="flash" id="flash"></div>
-<div class="bg"></div>
+<div class="bg" id="bg"><div class="scatter" id="scatter"></div><div class="meadow" id="meadow"></div></div>
 <div class="border l" id="borderL"></div>
 <div class="border r" id="borderR"></div>
 <svg class="trail" id="trail" aria-hidden="true"></svg>
@@ -230,10 +233,11 @@
   <p class="tagline">Nosso jardim<br>está em festa! <span>♡</span></p>
 
   <div class="frame" id="frame">
+    <img class="photo" id="photo" alt="Cecília" src="cecilia.jpg" decoding="async">
     <svg class="f glow" viewBox="0 0 400 400" aria-hidden="true">
       <defs><radialGradient id="photoBg" cx=".5" cy=".4"><stop offset="0" stop-color="#fff5df"/><stop offset=".55" stop-color="#ecdcae"/><stop offset="1" stop-color="#c3c08a"/></radialGradient>
         <clipPath id="flowerClip"><path id="flowerClipPath"/></clipPath></defs>
-      <g clip-path="url(#flowerClip)"><rect width="400" height="400" fill="url(#photoBg)"/><g id="photoBox"></g></g>
+      <g clip-path="url(#flowerClip)" id="photoBox"></g>
       <path id="flowerOutline" fill="none" stroke="url(#goldG)" stroke-width="3"/>
       <path id="flowerOutline2" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1"/>
       <g id="frameDaisies"></g>
@@ -356,10 +360,36 @@ $('flowerOutline2').setAttribute('d',flowerPath(200,205,106,83));
 $('flowerClipPath').setAttribute('d',flowerPath(200,205,106,88));
 
 /* foto da Cecília; sem foto, mostra um campinho de margaridas */
-const img=new Image();
-img.onload=()=>{$('photoBox').innerHTML=`<image href="${esc(CONFIG.foto)}" width="400" height="400" preserveAspectRatio="xMidYMin slice"/>`};
-img.onerror=()=>{$('photoBox').innerHTML=[[110,160,46],[280,130,40],[200,270,60],[80,300,30],[320,290,34]].map(([x,y,r])=>`<g transform="translate(${x} ${y})"><g class="spin" style="animation-duration:${rnd(40,70).toFixed(0)}s">${daisy(r)}</g></g>`).join('')};
-img.src=CONFIG.foto;
+const photo=$('photo');
+const maskSVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><path d="${flowerPath(200,205,106,88)}"/></svg>`;
+const maskURL=`url("data:image/svg+xml,${encodeURIComponent(maskSVG)}")`;
+photo.style.webkitMaskImage=photo.style.maskImage=maskURL;
+photo.style.webkitMaskSize=photo.style.maskSize='100% 100%';
+photo.onerror=()=>{photo.remove();$('photoBox').innerHTML=`<rect width="400" height="400" fill="url(#photoBg)"/>`+[[110,160,46],[280,130,40],[200,270,60],[80,300,30],[320,290,34]].map(([x,y,r])=>`<g transform="translate(${x} ${y})">${daisy(r)}</g>`).join('')};
+if(CONFIG.foto!=='cecilia.jpg') photo.src=CONFIG.foto;
+
+/* ---------- jardim florido no fundo ---------- */
+function meadow(){
+  const W=innerWidth, small=W<600;
+  const layers=[{n:small?9:18,r:[7,11],h:[30,70],hill:'#e3ecd6',o:.75},{n:small?7:14,r:[12,18],h:[50,110],hill:'#d6e4c8',o:.9},{n:small?5:10,r:[18,26],h:[60,150],hill:'#c9dbb9',o:1}];
+  let html='';
+  layers.forEach((L,li)=>{
+    html+=`<svg class="hill" style="height:${40-li*12}%;opacity:${L.o}" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0 ${30+li*8} C 200 ${li*6}, 380 ${50-li*5}, 560 ${25+li*4} S 860 ${8+li*6}, 1000 ${30} L1000 100 L0 100Z" fill="${L.hill}"/></svg>`;
+    for(let i=0;i<L.n;i++){
+      const r=rnd(...L.r), len=rnd(...L.h), pink=Math.random()<.3, bend=rnd(-12,12);
+      html+=`<div class="stem" style="left:${(i/L.n*100+rnd(-2,4)).toFixed(1)}%;bottom:${rnd(-6,(2-li)*8).toFixed(0)}px;--a:${rnd(2,4).toFixed(1)}deg;animation-duration:${rnd(3,6).toFixed(1)}s;animation-delay:-${rnd(0,5).toFixed(1)}s;opacity:${L.o}">
+        <svg width="${r*2.6}" height="${len+r}" viewBox="${-r*1.3} ${-r} ${r*2.6} ${len+r}" style="overflow:visible">
+          <path d="M0 ${len} Q ${bend} ${len/2} 0 0" stroke="#a3bd91" stroke-width="${Math.max(1,r/10)}" fill="none"/>${leaf(0,len*.6,200,r/24)}
+          <g transform="scale(1 ${rnd(.7,.95).toFixed(2)})">${daisy(r,{petals:r>16?18:14,layers:r>16?2:1,pink})}</g></svg></div>`;
+    }
+  });
+  $('meadow').innerHTML=html;
+  let sc='';
+  for(let i=0;i<(small?14:26);i++){const r=rnd(5,10);
+    sc+=`<svg style="position:absolute;left:${rnd(0,96).toFixed(1)}%;top:${rnd(2,62).toFixed(1)}%;transform:rotate(${rnd(0,90).toFixed(0)}deg)" width="${r*2.2}" height="${r*2.2}" viewBox="${-r*1.1} ${-r*1.1} ${r*2.2} ${r*2.2}">${daisy(r,{petals:13,layers:1,pink:Math.random()<.4})}</svg>`}
+  $('scatter').innerHTML=sc;
+}
+meadow();
 
 /* margaridas na moldura (como na arte) */
 $('frameDaisies').innerHTML=[[60,110,26,-20],[340,70,22,10],[318,340,26,15]].map(([x,y,r,rot],i)=>
@@ -386,7 +416,7 @@ function border(el){
   el.innerHTML=html;
 }
 function borders(){border($('borderL'));border($('borderR'))}
-borders(); let rz; addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(borders,300)});
+borders(); let rz, lastW=innerWidth; addEventListener('resize',()=>{if(innerWidth===lastW)return; lastW=innerWidth; clearTimeout(rz);rz=setTimeout(()=>{borders();meadow()},300)});
 
 /* ---------- abelhinhas voando com rastro pontilhado ---------- */
 const beeSVG=`<svg viewBox="-32 -28 64 56"><g class="body">
