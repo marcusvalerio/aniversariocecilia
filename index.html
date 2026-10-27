@@ -84,7 +84,9 @@
   .bloom{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;overflow:hidden;
     background:#fdeef0;transition:opacity 1.2s ease 1.1s,visibility 0s 2.4s}
   .bloom{background:radial-gradient(circle at 50% 45%,#fffaf0 0%,#fdeef0 50%,#f6dfe4 100%)}
-  .bloom .bwrap{position:relative;display:grid;place-items:center}
+  .bloom .warp{position:absolute;inset:0;pointer-events:none}
+  .bloom .warp svg{position:absolute;left:0;top:0;width:100px;height:100px;overflow:visible;filter:none;transition:none;will-change:transform,opacity}
+  .bloom .bwrap{position:relative;z-index:1;display:grid;place-items:center}
   .bloom .rays{position:absolute;left:50%;top:50%;width:240vmax;height:240vmax;transform:translate(-50%,-50%);opacity:.35;transition:opacity 1.5s;
     background:repeating-conic-gradient(from 0deg,rgba(255,236,170,.55) 0deg 4deg,transparent 4deg 15deg);animation:spin 80s linear infinite;
     -webkit-mask:radial-gradient(circle,#000 0,transparent 45%);mask:radial-gradient(circle,#000 0,transparent 45%)}
@@ -94,7 +96,7 @@
   @keyframes budpulse{50%{transform:scale(1.06)}}
   .bp{transform-box:fill-box;transform-origin:50% 100%;transform:scale(.5,.4);transition:transform 1.3s cubic-bezier(.3,1.5,.5,1)}
   .bdisc{transform:scale(.55);transform-box:fill-box;transform-origin:center;transition:transform 1.2s cubic-bezier(.3,1.6,.5,1) .2s}
-  .bloom p{position:relative;text-align:center;font-family:'Cinzel',serif;letter-spacing:.38em;font-size:.78rem;color:var(--rose-d);font-weight:500;transition:opacity .6s}
+  .bloom p{position:relative;z-index:1;text-align:center;font-family:'Cinzel',serif;letter-spacing:.38em;font-size:.78rem;color:var(--rose-d);font-weight:500;transition:opacity .6s}
   .bloom p em{display:block;font-family:'Parisienne',cursive;font-style:normal;letter-spacing:0;font-size:1.7rem;color:var(--gold-d);margin-bottom:10px}
   .bloom p b{font-weight:600;color:#b4687a;animation:breathe 2.2s ease-in-out infinite}
   @keyframes breathe{50%{opacity:.35}}
@@ -219,6 +221,7 @@
 </defs></svg>
 
 <div class="bloom" id="bloom" role="button" aria-label="Abrir convite">
+  <div class="warp" id="warp"></div>
   <div class="bwrap"><div class="rays"></div>
   <svg viewBox="-110 -110 220 220"><g class="bud" id="bloomFlower"></g></svg></div>
   <p><em>Um jardim inteiro floresceu para ela</em><b>toque para florescer</b></p>
@@ -500,6 +503,32 @@ if(!reduce){
   };
   if(reduce){$('bloom').remove();document.body.classList.remove('closed');return}
   $('bloom').addEventListener('click',open);
+
+  /* flores voando do fundo em direção à tela */
+  const warp=$('warp'), fl=[], N=innerWidth<600?26:40;
+  const spawn=(f,z)=>{f.x=rnd(-1,1); f.y=rnd(-1,1); if(Math.hypot(f.x,f.y)<.25){f.x*=3;f.y*=3}
+    f.z=z; f.r=rnd(-180,180); f.vr=rnd(-40,40)};
+  for(let i=0;i<N;i++){
+    const el=document.createElementNS(NS,'svg'); el.setAttribute('viewBox','-50 -50 100 100');
+    el.innerHTML=daisy(46,{petals:rnd(14,22)|0,pink:Math.random()<.4,layers:2});
+    warp.appendChild(el); const f={el}; spawn(f,rnd(.05,1)); fl.push(f);
+  }
+  let last=performance.now(), speed=.16;
+  (function tick(now){
+    if(!warp.isConnected)return;
+    const dt=Math.min(.05,(now-last)/1000); last=now;
+    if(document.body.classList.contains('opening')) speed=Math.min(2.2,speed*1.06+.02);
+    const cx=innerWidth/2, cy=innerHeight*.45, sp=Math.max(innerWidth,innerHeight)*.55;
+    for(const f of fl){
+      f.z-=speed*dt; f.r+=f.vr*dt;
+      if(f.z<=.03) spawn(f,1);
+      const k=1/f.z, x=cx+f.x*sp*k*.35, y=cy+f.y*sp*k*.35, sc=.12*k;
+      const op=Math.min(1,(1-f.z)*2.5)*Math.min(1,(f.z-.03)*8);
+      f.el.style.transform=`translate(${x-50}px,${y-50}px) scale(${sc.toFixed(3)}) rotate(${f.r.toFixed(1)}deg)`;
+      f.el.style.opacity=op.toFixed(3); f.el.style.zIndex=Math.round((1-f.z)*100);
+    }
+    requestAnimationFrame(tick);
+  })(last);
 })();
 
 /* ---------- poeira dourada que segue o dedo ---------- */
