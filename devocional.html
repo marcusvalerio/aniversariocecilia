@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Florescendo em Promessas</title>
+<meta name="description" content="Palavras de fé e bênçãos para declarar sobre nossos filhos.">
+<meta name="theme-color" content="#f7e3e3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Promessas">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="/devocional.webmanifest">
+<link rel="icon" href="/devocional-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/devocional-icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf6ee; --paper:#fffaf3; --ink:#3f3a3a; --soft:#7a6f6c;
+  --pink:#e57a92; --pink-l:#f9d9df; --yel:#e2a63b; --yel-l:#fbe3b4;
+  --green:#8db37a; --line:#efd9d3; --shadow:0 10px 30px rgba(170,120,110,.18);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;
+  background-image:linear-gradient(45deg,rgba(249,217,223,.35) 25%,transparent 25%,transparent 75%,rgba(249,217,223,.35) 75%),
+  linear-gradient(45deg,rgba(249,217,223,.35) 25%,transparent 25%,transparent 75%,rgba(249,217,223,.35) 75%);
+  background-size:28px 28px;background-position:0 0,14px 14px;overflow:hidden}
+.script{font-family:"Dancing Script",cursive}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);transition:opacity .4s,transform .4s}
+.hidden{opacity:0;pointer-events:none;transform:translateY(12px)}
+
+/* Capa */
+#capa{align-items:center;justify-content:center;padding:24px 16px}
+.cover{background:var(--paper);border-radius:22px;box-shadow:var(--shadow);max-width:420px;width:100%;
+  padding:34px 22px 26px;text-align:center;position:relative;border:2px dashed var(--pink-l);outline:10px solid var(--paper)}
+.bow{font-size:44px;line-height:1;margin-top:-6px}
+.cover h1{margin:6px 0 0;font-weight:600;font-size:26px;color:#9a6a5c;font-family:Nunito}
+.cover h1 b{display:block;font-family:"Dancing Script";font-size:62px;color:var(--pink);line-height:1.05;font-weight:700}
+.cover p{margin:14px 0 4px;font-size:17px}
+.cover .tag{font-family:"Dancing Script";font-size:22px;color:#7d5a52;margin-top:14px}
+.heart{color:var(--pink);font-size:18px}
+.field{margin:20px 0 6px;text-align:left}
+.field label{font-size:14px;color:var(--soft);font-weight:600}
+.field input{width:100%;margin-top:6px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:#fff;font:inherit;font-size:17px;outline:none}
+.field input:focus{border-color:var(--pink)}
+.seg{display:flex;gap:8px;margin-top:10px}
+.seg button{flex:1;padding:10px;border-radius:12px;border:2px solid var(--line);background:#fff;font-weight:600;font-size:15px}
+.seg button[aria-pressed=true]{border-color:var(--pink);background:var(--pink-l)}
+.cta{margin-top:18px;width:100%;padding:15px;border-radius:16px;background:var(--pink);color:#fff;font-weight:700;font-size:18px;box-shadow:0 6px 16px rgba(229,122,146,.35)}
+.link{margin-top:12px;color:var(--pink);font-weight:600;font-size:15px;text-decoration:underline}
+.daisy{position:absolute;font-size:34px}
+
+/* Leitura */
+header.top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 4px}
+header.top .ttl{font-family:"Dancing Script";font-size:24px;color:var(--pink);font-weight:700}
+.ib{width:42px;height:42px;border-radius:50%;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.08);display:grid;place-items:center;font-size:20px}
+.progress{display:flex;gap:5px;justify-content:center;padding:6px 16px 0;flex-wrap:wrap}
+.progress i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.3s}
+.progress i.done{background:var(--green)}
+.progress i.cur{outline:2px solid var(--pink);outline-offset:2px}
+.track{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;min-height:0}
+.track::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;padding:12px 16px;min-height:0}
+.card{--c:var(--pink);--cl:var(--pink-l);background:var(--paper);border-radius:22px;box-shadow:var(--shadow);width:100%;max-width:420px;max-height:100%;overflow:auto;
+  padding:22px 20px 22px;text-align:center;position:relative;border:2px dashed var(--cl);outline:8px solid var(--paper)}
+.card.y{--c:var(--yel);--cl:var(--yel-l)}
+.ref{display:inline-block;background:var(--cl);padding:8px 20px;border-radius:999px;font-weight:700;font-size:19px;margin:4px 0 16px 30px}
+.card .flor{position:absolute;left:12px;top:10px;font-size:34px}
+.verse{font-size:19px;line-height:1.5;margin:0}
+.decl-t{font-family:"Dancing Script";font-size:34px;color:var(--c);margin:10px 0 4px;font-weight:700}
+.decl{font-size:20px;line-height:1.45;font-weight:600;margin:0}
+.decl .nm{color:var(--c)}
+.mark{margin-top:20px;padding:12px 18px;border-radius:14px;border:2px solid var(--cl);font-weight:700;font-size:16px;width:100%}
+.mark.on{background:#e6f1df;border-color:var(--green);color:#4f7a3d}
+.bottom-fl{margin-top:14px;font-size:22px;letter-spacing:6px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px 14px}
+.nav button.arrow{flex:1;padding:13px;border-radius:14px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.08);font-weight:700}
+.nav .count{min-width:64px;text-align:center;color:var(--soft);font-weight:700}
+.letter p{font-size:18px;line-height:1.55;margin:8px 0}
+.letter .sign{font-family:"Dancing Script";font-size:28px;color:var(--pink);margin-top:14px}
+
+/* Índice */
+#indice .list{flex:1;overflow:auto;padding:4px 16px 20px;max-width:460px;width:100%;margin:0 auto}
+.item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--paper);border-radius:16px;padding:13px 14px;margin:8px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.item .n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--pink-l);flex:none}
+.item.y .n{background:var(--yel-l)}
+.item .t{flex:1;font-weight:700}
+.item .t small{display:block;font-weight:400;color:var(--soft);font-size:13px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw}
+.item .ok{color:var(--green);font-size:20px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#4f7a3d;color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- CAPA -->
+<section id="capa" class="screen">
+  <div class="cover">
+    <span class="daisy" style="left:10px;top:8px">🌼</span>
+    <span class="daisy" style="right:10px;top:8px">🌼</span>
+    <div class="bow">🎀</div>
+    <h1>Florescendo em <b>Promessas</b></h1>
+    <p>Palavras de fé e bênçãos para declarar sobre nossos filhos.</p>
+    <div class="heart">— ♥ —</div>
+    <div class="tag">Que cada criança seja um jardim de Deus neste mundo!</div>
+
+    <div class="field">
+      <label for="nome">Nome do seu filho(a) — opcional</label>
+      <input id="nome" autocomplete="off" placeholder="Ex.: Cecília" maxlength="30">
+      <div class="seg" role="group" aria-label="Menino ou menina">
+        <button data-g="a" aria-pressed="true">Menina 🌸</button>
+        <button data-g="o" aria-pressed="false">Menino 🌿</button>
+      </div>
+    </div>
+    <button class="cta" id="comecar">Começar a declarar ♥</button>
+    <br><button class="link" id="verIndice">Ver todas as promessas</button>
+  </div>
+</section>
+
+<!-- LEITURA -->
+<section id="leitura" class="screen hidden">
+  <header class="top">
+    <button class="ib" id="home" aria-label="Capa">🏡</button>
+    <span class="ttl">Promessas</span>
+    <button class="ib" id="lista" aria-label="Todas as promessas">☰</button>
+  </header>
+  <div class="progress" id="progress"></div>
+  <div class="track" id="track"></div>
+  <div class="nav">
+    <button class="arrow" id="prev">‹ Anterior</button>
+    <span class="count" id="count"></span>
+    <button class="arrow" id="next">Próxima ›</button>
+  </div>
+</section>
+
+<!-- ÍNDICE -->
+<section id="indice" class="screen hidden">
+  <header class="top">
+    <button class="ib" id="voltar" aria-label="Voltar">‹</button>
+    <span class="ttl">Todas as promessas</span>
+    <span style="width:42px"></span>
+  </header>
+  <div class="list" id="list"></div>
+</section>
+
+<div class="toast" id="toast">Declarado! 🌼</div>
+
+<script>
+const P = [
+  ["Jeremias 29:11","Eu é que sei que pensamentos tenho a vosso respeito, diz o Senhor, pensamentos de paz e não de mal, para vos dar o fim que desejais.","Meu filho(a) terá um futuro de paz, esperança e propósito nas mãos de Deus."],
+  ["Isaías 54:13","Todos os teus filhos serão ensinados do Senhor; e será grande a paz de teus filhos.","Meu filho(a) será ensinado(a) pelo Senhor e viverá debaixo da Sua paz."],
+  ["Salmos 1:3","Pois será como a árvore plantada junto a ribeiros de águas, que dá o seu fruto no seu tempo e cuja folha não murcha.","Meu filho(a) terá raízes firmadas em Deus e dará bons frutos em sua vida."],
+  ["Números 6:24-26","O Senhor te abençoe e te guarde; o Senhor faça resplandecer o seu rosto sobre ti e te conceda a paz.","Meu filho(a) será guardado(a), abençoado(a) e acompanhado(a) pela presença de Deus."],
+  ["Provérbios 22:6","Instrui o menino no caminho em que deve andar, e até quando envelhecer não se desviará dele.","Meu filho(a) crescerá conhecendo e amando os caminhos do Senhor."],
+  ["Salmos 121:7-8","O Senhor te guardará de todo mal; guardará a tua alma.","A proteção do Senhor estará sobre meu filho(a) em todos os seus caminhos."],
+  ["Filipenses 4:13","Tudo posso naquele que me fortalece.","Meu filho(a) será forte, corajoso(a) e vencerá com a ajuda de Deus."],
+  ["Mateus 5:8","Bem-aventurados os puros de coração, porque eles verão a Deus.","Meu filho(a) terá um coração puro, cheio de amor, e conhecerá a presença de Deus."],
+  ["1 Coríntios 16:13","Estejam vigilantes, firmes na fé, corajosos, sejam fortes.","Meu filho(a) será firme na fé, com um coração valente e cheio de coragem."],
+  ["Romanos 8:28","Sabemos que todas as coisas cooperam para o bem daqueles que amam a Deus.","Meu filho(a) viverá o melhor que Deus preparou, mesmo nos dias difíceis."],
+  ["Provérbios 3:5-6","Confie no Senhor de todo o seu coração e não se apoie em seu próprio entendimento; reconheça-o em todos os seus caminhos, e ele endireitará as suas veredas.","Meu filho(a) confiará em Deus e Ele guiará cada passo de sua vida."],
+  ["Salmos 37:5","Entrega o teu caminho ao Senhor, confia nEle, e o mais Ele fará.","Meu filho(a) entregará sua vida ao Senhor e verá o cuidado dEle em tudo."]
+];
+const N = P.length + 1; // + carta aos pais
+const $ = s => document.querySelector(s);
+const store = {
+  get(k,d){try{const v=localStorage.getItem("fp_"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("fp_"+k,JSON.stringify(v))}catch(e){}}
+};
+let nome = store.get("nome",""), gen = store.get("gen","a"), done = store.get("done",{}), idx = store.get("idx",0);
+const today = new Date().toISOString().slice(0,10);
+if (store.get("day","") !== today){ done = {}; store.set("done",done); store.set("day",today); }
+
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function personal(t){
+  let h = esc(t);
+  if (nome){
+    const n = `<span class="nm">${esc(nome)}</span>`;
+    h = h.replace(/Meu filho\(a\)/g,n).replace(/meu filho\(a\)/g,n);
+  }
+  return h.replace(/o\(a\)/g, gen==="a" ? "a" : "o");
+}
+
+function render(){
+  const tr = $("#track"); tr.innerHTML = "";
+  P.forEach(([ref,v,d],i)=>{
+    const y = i%2===1 ? " y":"";
+    tr.insertAdjacentHTML("beforeend",`<div class="slide"><article class="card${y}">
+      <span class="flor">🌼</span>
+      <div class="ref">${i+1}. ${ref}</div>
+      <p class="verse">“${esc(v)}”</p>
+      <div class="heart" style="margin-top:12px">♥</div>
+      <div class="decl-t">Declaração:</div>
+      <p class="decl">${personal(d)}</p>
+      <button class="mark${done[i]?" on":""}" data-i="${i}">${done[i]?"✓ Declarado hoje":"Declarei em voz alta 🙏"}</button>
+      <div class="bottom-fl">🌸 <span class="heart">♥</span> 🌼</div>
+    </article></div>`);
+  });
+  tr.insertAdjacentHTML("beforeend",`<div class="slide"><article class="card letter">
+    <span class="flor">🌷</span>
+    <div class="decl-t" style="font-size:38px;margin-top:6px">Queridos pais,</div>
+    <p>Vocês têm em suas mãos uma das maiores missões que Deus confiou: cuidar de uma vida.</p>
+    <p>Que nunca faltem palavras de amor, fé e bênçãos sobre seus filhos. Profetizem vida, declarem promessas e ensinem seus pequenos a caminhar com Deus.</p>
+    <div class="heart">— ♥ —</div>
+    <div class="sign">Que Deus abençoe a jornada de vocês!</div>
+  </article></div>`);
+  renderProgress(); renderList();
+}
+function renderProgress(){
+  $("#progress").innerHTML = P.map((_,i)=>`<i class="${done[i]?"done":""}${i===idx?" cur":""}"></i>`).join("");
+  $("#count").textContent = idx < P.length ? `${idx+1} / ${P.length}` : "♥";
+  $("#prev").disabled = idx===0; $("#prev").style.opacity = idx===0?.4:1;
+  $("#next").textContent = idx >= P.length ? "Recomeçar ↺" : idx === P.length-1 ? "Carta ›" : "Próxima ›";
+}
+function renderList(){
+  $("#list").innerHTML = P.map(([ref,,d],i)=>`<button class="item${i%2?" y":""}" data-go="${i}">
+    <span class="n">${i+1}</span><span class="t">${ref}<small>${personal(d).replace(/<[^>]+>/g,"")}</small></span>
+    <span class="ok">${done[i]?"✓":""}</span></button>`).join("") +
+    `<button class="item" data-go="${P.length}"><span class="n">💌</span><span class="t">Queridos pais<small>Uma carta com carinho</small></span></button>`;
+}
+function go(i, smooth=true){
+  idx = Math.max(0, Math.min(N-1, i)); store.set("idx", idx);
+  const tr = $("#track");
+  tr.scrollTo({left: idx*tr.clientWidth, behavior: smooth ? "smooth" : "auto"});
+  renderProgress();
+}
+function show(id){
+  ["capa","leitura","indice"].forEach(s=>$("#"+s).classList.toggle("hidden", s!==id));
+  if (id==="leitura") requestAnimationFrame(()=>go(idx,false));
+}
+
+// Capa
+$("#nome").value = nome;
+document.querySelectorAll(".seg button").forEach(b=>{
+  b.setAttribute("aria-pressed", b.dataset.g===gen);
+  b.onclick = ()=>{ gen=b.dataset.g; document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); };
+});
+function saveName(){ nome = $("#nome").value.trim(); store.set("nome",nome); store.set("gen",gen); render(); }
+$("#comecar").onclick = ()=>{ saveName(); show("leitura"); };
+$("#verIndice").onclick = ()=>{ saveName(); show("indice"); };
+$("#home").onclick = ()=>show("capa");
+$("#lista").onclick = ()=>{ renderList(); show("indice"); };
+$("#voltar").onclick = ()=>show("leitura");
+$("#list").onclick = e=>{ const b=e.target.closest("[data-go]"); if(!b) return; idx=+b.dataset.go; show("leitura"); };
+$("#prev").onclick = ()=>go(idx-1);
+$("#next").onclick = ()=>go(idx >= N-1 ? 0 : idx+1);
+
+// Marcar como declarado
+$("#track").addEventListener("click", e=>{
+  const b = e.target.closest(".mark"); if(!b) return;
+  const i = +b.dataset.i; done[i] = !done[i]; store.set("done",done);
+  b.classList.toggle("on", done[i]); b.textContent = done[i] ? "✓ Declarado hoje" : "Declarei em voz alta 🙏";
+  if (done[i]){
+    const t=$("#toast"); const all = P.every((_,k)=>done[k]);
+    t.textContent = all ? "Todas as promessas declaradas hoje! 🌷" : "Declarado! 🌼";
+    t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1600);
+    if (navigator.vibrate) navigator.vibrate(30);
+  }
+  renderProgress();
+});
+
+// Swipe sincroniza índice
+let st; $("#track").addEventListener("scroll", ()=>{
+  clearTimeout(st); st = setTimeout(()=>{
+    const tr=$("#track"); const i=Math.round(tr.scrollLeft/tr.clientWidth);
+    if (i!==idx){ idx=i; store.set("idx",idx); renderProgress(); }
+  }, 80);
+});
+addEventListener("resize", ()=>go(idx,false));
+addEventListener("keydown", e=>{ if($("#leitura").classList.contains("hidden")) return;
+  if(e.key==="ArrowRight") go(idx+1); if(e.key==="ArrowLeft") go(idx-1); });
+
+render();
+if (nome) show("leitura");
+</script>
+</body>
+</html>
