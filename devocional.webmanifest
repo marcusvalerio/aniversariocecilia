@@ -3,7 +3,7 @@
   "short_name": "Promessas",
   "start_url": "/devocional",
   "display": "standalone",
-  "background_color": "#fbf6ee",
-  "theme_color": "#f7e3e3",
+  "background_color": "#fbf8f2",
+  "theme_color": "#fbf8f2",
   "icons": [{ "src": "/devocional-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }
