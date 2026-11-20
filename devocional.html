@@ -62,6 +62,17 @@ svg{display:block}
 .field label,.label{font-size:14px;font-weight:700}
 .field input{width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font:inherit;font-size:17px;transition:border-color .2s}
 .field input:focus{border-color:var(--rosa-d);outline:none}
+.kid{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:18px;background:var(--paper);border:1.5px solid var(--line)}
+.kid-top{display:flex;justify-content:space-between;align-items:center}
+.kid-top button{font-size:13px;font-weight:700;color:var(--soft);text-decoration:underline;text-underline-offset:3px}
+.kid input{width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:17px}
+.kid input:focus{border-color:var(--rosa-d);outline:none}
+.add-kid{padding:14px;border-radius:16px;border:1.5px dashed var(--line);font-weight:700;color:var(--soft);display:flex;align-items:center;justify-content:center;gap:8px}
+.add-kid svg{width:22px;height:22px}
+.kidbar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:-8px -20px 0;padding:2px 20px 4px}
+.kidbar::-webkit-scrollbar{display:none}
+.kidbar button{flex:none;padding:8px 16px;border-radius:999px;background:var(--paper);box-shadow:var(--sh);font-weight:700;font-size:14px}
+.kidbar button[aria-pressed=true]{background:var(--rosa);color:var(--rosa-d);box-shadow:inset 0 0 0 1.5px var(--rosa-d)}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .seg button{padding:12px;border-radius:14px;border:1.5px solid var(--line);background:var(--paper);font-weight:700;font-size:15px}
 .seg button[aria-pressed=true]{border-color:var(--rosa-d);background:var(--rosa)}
@@ -265,11 +276,9 @@ svg{display:block}
       </div>
       <div class="form">
         <div class="field"><label for="resp">Seu nome</label><input id="resp" maxlength="30" placeholder="Ex.: Ana" required></div>
-        <div class="field"><label for="nome">Nome do seu filho(a)</label><input id="nome" maxlength="30" placeholder="Ex.: Cecília" required></div>
-        <div class="seg" role="group" aria-label="Menina ou menino">
-          <button type="button" data-g="a">Menina</button>
-          <button type="button" data-g="o">Menino</button>
-        </div>
+        <div class="label">Seus filhos</div>
+        <div class="form" id="kidsBox" style="gap:12px;margin-top:-8px"></div>
+        <button type="button" class="add-kid" id="addKid"><svg viewBox="0 0 64 64"><use href="#broto"/></svg>Adicionar outro filho(a)</button>
         <button class="btn" type="submit" style="margin-top:8px">Começar a declarar</button>
       </div>
     </form>
@@ -286,6 +295,7 @@ svg{display:block}
   </div></div>
   <div class="view" id="vJardim" hidden><div class="inner">
     <div class="pagehead"><svg><use href="#regador"/></svg><div><div class="eyebrow">Cada declaração planta uma flor</div><h2>Jardim de <span class="nm"></span></h2></div></div>
+    <div class="kidbar" data-kidbar></div>
     <div class="garden" id="garden"></div>
     <div class="stats"><div class="stat"><b id="gCount">0</b>flores plantadas</div><div class="stat"><b id="gLeft">30</b>ainda por florescer</div></div>
     <div class="letter">
@@ -293,7 +303,7 @@ svg{display:block}
       <p>Vocês têm em suas mãos uma das maiores missões que Deus confiou: cuidar de uma vida. Que nunca faltem palavras de amor, fé e bênçãos sobre seus filhos. Profetizem vida, declarem promessas e ensinem seus pequenos a caminhar com Deus.</p>
       <p class="sign">Que Deus abençoe a jornada de vocês!</p>
     </div>
-    <button class="link" id="editName">Trocar nomes</button>
+    <button class="link" id="editName">Editar nomes e filhos</button>
   </div></div>
   <div class="view" id="vFav" hidden><div class="inner">
     <div class="pagehead"><svg><use href="#coracao"/></svg><div><div class="eyebrow">Para declarar sempre</div><h2>Favoritas</h2></div></div>
@@ -359,8 +369,12 @@ const store = {
   get(k,d){try{const v=localStorage.getItem("fp2_"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
   set(k,v){try{localStorage.setItem("fp2_"+k,JSON.stringify(v))}catch(e){}}
 };
-let S = {ok:store.get("ok",false), nome:store.get("nome",""), resp:store.get("resp",""), gen:store.get("gen","a"), done:store.get("done",{}), fav:store.get("fav",{}), idx:store.get("idx",null), tema:"todos"};
-const save = k => store.set(k,S[k]);
+let S = {ok:store.get("ok",false), resp:store.get("resp",""), fav:store.get("fav",{}), tema:"todos", cur:store.get("cur",0),
+  kids:store.get("kids",null)};
+if (!S.kids){ const n=store.get("nome",""); S.kids = n ? [{nome:n, gen:store.get("gen","a"), done:store.get("done",{}), idx:store.get("idx",null)}] : []; }
+if (S.cur >= S.kids.length) S.cur = 0;
+["nome","gen","done","idx"].forEach(k=>Object.defineProperty(S,k,{get(){const c=S.kids[S.cur];return c?c[k]:(k==="done"?{}:k==="gen"?"a":k==="idx"?null:"")},set(v){if(S.kids[S.cur])S.kids[S.cur][k]=v}}));
+const save = k => ["nome","gen","done","idx"].includes(k) ? store.set("kids",S.kids) : store.set(k,S[k]);
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const g = (t)=> t.replace(/(o|e)\(a\)/g,(m,v)=> S.gen==="a" ? "a" : v).replace(/ele\(a\)/g, S.gen==="a"?"ela":"ele");
 function pers(t, html=true){
@@ -378,7 +392,7 @@ function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show")
 function screen(id){ ["gate","capa","main"].forEach(s=>$("#"+s).hidden = s!==id); }
 function boot(){
   if (!S.ok) return screen("gate");
-  if (!S.nome || !S.resp) return showCapa();
+  if (!S.kids.length || !S.resp) return showCapa();
   screen("main"); renderAll();
 }
 
@@ -391,13 +405,41 @@ $("#gateForm").onsubmit = e=>{
 };
 
 // Capa
-function showCapa(){
-  $("#nome").value = S.nome; $("#resp").value = S.resp;
-  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.g===S.gen));
-  screen("capa");
+function kidRow(k, n, total){
+  return `<div class="kid" data-k="${n}">
+    <div class="kid-top"><span class="label">${total>1?`Filho(a) ${n+1}`:"Nome do seu filho(a)"}</span>${total>1?`<button type="button" data-rm="${n}">Remover</button>`:""}</div>
+    <input maxlength="30" placeholder="Ex.: Cecília" value="${esc(k.nome)}" aria-label="Nome do filho(a) ${n+1}" required>
+    <div class="seg" role="group" aria-label="Menina ou menino">
+      <button type="button" data-g="a" aria-pressed="${k.gen==="a"}">Menina</button>
+      <button type="button" data-g="o" aria-pressed="${k.gen==="o"}">Menino</button>
+    </div></div>`;
 }
-document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{ S.gen=b.dataset.g; document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); });
-$("#capaForm").onsubmit = e=>{ e.preventDefault(); S.nome=$("#nome").value.trim(); S.resp=$("#resp").value.trim(); save("nome"); save("resp"); save("gen"); screen("main"); renderAll(); };
+let draft = [];
+function readDraft(){ document.querySelectorAll("#kidsBox .kid").forEach((el,n)=>{ draft[n].nome = el.querySelector("input").value; }); }
+function drawKids(){ $("#kidsBox").innerHTML = draft.map((k,n)=>kidRow(k,n,draft.length)).join(""); }
+function showCapa(){
+  $("#resp").value = S.resp;
+  draft = S.kids.length ? S.kids.map(k=>({...k})) : [{nome:"",gen:"a",done:{},idx:null}];
+  drawKids(); screen("capa");
+}
+$("#kidsBox").onclick = e=>{
+  const g=e.target.closest("[data-g]"), rm=e.target.closest("[data-rm]");
+  readDraft();
+  if (g){ draft[+g.closest(".kid").dataset.k].gen = g.dataset.g; drawKids(); }
+  if (rm){ draft.splice(+rm.dataset.rm,1); drawKids(); }
+};
+$("#addKid").onclick = ()=>{ readDraft(); draft.push({nome:"",gen:"a",done:{},idx:null}); drawKids(); const ins=document.querySelectorAll("#kidsBox input"); ins[ins.length-1].focus(); };
+$("#capaForm").onsubmit = e=>{
+  e.preventDefault(); readDraft();
+  S.kids = draft.map(k=>({...k, nome:k.nome.trim()})).filter(k=>k.nome);
+  S.resp = $("#resp").value.trim(); S.cur = Math.min(S.cur, S.kids.length-1);
+  store.set("kids",S.kids); save("resp"); save("cur"); screen("main"); renderAll();
+};
+function kidbar(){
+  if (S.kids.length < 2) return "";
+  return S.kids.map((k,n)=>`<button data-kid="${n}" aria-pressed="${n===S.cur}">${esc(k.nome)}</button>`).join("");
+}
+document.addEventListener("click", e=>{ const b=e.target.closest("[data-kid]"); if(!b) return; S.cur=+b.dataset.kid; save("cur"); renderAll(); });
 $("#editName").onclick = showCapa;
 
 // Abas
@@ -417,6 +459,7 @@ function renderHoje(dir){
   const nd = Object.values(S.done).filter(Boolean).length;
   $("#hoje").innerHTML = `
     <div class="pagehead"><svg><use href="#margarida"/></svg><div><div class="eyebrow">Olá, ${esc(S.resp)}</div><h2>Promessa para <span style="color:var(--rosa-d)">${esc(S.nome)}</span></h2></div></div>
+    ${S.kids.length>1?`<div class="kidbar">${kidbar()}</div>`:""}
     <div class="stack">
       <div class="progress">
         <span class="lbl">Dia ${i+1} de ${P.length}</span>
@@ -488,6 +531,7 @@ document.addEventListener("click", e=>{ const b=e.target.closest("[data-go]"); i
 let lastPlanted = -1;
 const flor = i => { const t = P[i][3]; return t==="futuro"||t==="crescimento"||t==="sabedoria" ? "margarida-caule" : TEMAS[t].ic; };
 function renderGarden(){
+  document.querySelectorAll("[data-kidbar]").forEach(e=>{e.innerHTML=kidbar(); e.hidden=S.kids.length<2;});
   document.querySelectorAll(".nm").forEach(e=>e.textContent = S.nome || (S.gen==="a"?"minha filha":"meu filho"));
   $("#garden").innerHTML = P.map((_,i)=>`<button class="plot${S.done[i]?"":" seed"}${i===lastPlanted?" new":""}" data-go="${i}" aria-label="Dia ${i+1}">${ic(S.done[i]?flor(i):"broto")}</button>`).join("");
   const nd = Object.values(S.done).filter(Boolean).length; $("#gCount").textContent = nd; $("#gLeft").textContent = P.length-nd;
